@@ -1,0 +1,98 @@
+# Blocks Reference
+
+Descriptive lookup for block types, file structures, and existing styles/mods. For the decision ladder (which type to pick), see [section-mapping-decisions.md](section-mapping-decisions.md). For step-by-step scaffolding, see the matching skill linked from each section below.
+
+## File structures
+
+**Build-pipeline rule (applies to ALL blocks).** Every `.scss` file must be `import`ed by a JS entry (`index.js`, `script.js`, `view.js`, `edit.js`, etc.) listed in `block.json` — otherwise webpack does not compile it and the block renders unstyled. The example reference is `assets/example-blocks/`. Each `block.json` script key produces a matching `style-{handle}.css` (e.g. `script` → `style-script.css`, `viewScript` → `style-view.css`, `editorScript` → `style-index.css`), which must be listed in `style` / `viewStyle` / `editorStyle`.
+
+Set `"ignoreScripts": ["script"]` (or similar) only when that script is SCSS-only (no real frontend JS) — `ignoreScripts` suppresses script execution while still letting webpack build the CSS. If the script has real frontend JS, omit `ignoreScripts` so it loads.
+
+### Custom WP Block (`src/blocks/{name}/`)
+
+Reference layout: `assets/example-blocks/blocks/example/`. Full file list:
+
+```
+block.json        # metadata, API v3, category: chisel-blocks. Lists every JS entry (editorScript, script, viewScript) and the matching style files.
+index.js          # editor registration — must `import './style.scss'` (or `editor.scss`) to compile editor CSS
+edit.js           # React editor component
+save.js           # React save component (omit if server-rendered via `render.php`)
+script.js         # editor + frontend webpack entry. Must `import './style.scss'` so webpack builds `style-script.css`. Add to `ignoreScripts: ["script"]` if SCSS-only.
+view.js           # frontend-only webpack entry. Must `import './view.scss'` if those styles exist.
+style.scss        # shared editor + frontend styles — imported by both index.js AND script.js, which produces TWO outputs (style-index.css + style-script.css); list both in "style" array
+view.scss         # frontend-only styles — imported by view.js
+editor.scss       # editor-only — imported by edit.js / index.js
+render.php        # optional — server-side render (use with `"render": "file:./render.php"` in block.json; replaces save.js)
+init.php          # optional — server-side registration (e.g. for child blocks needing REST/MCP validation)
+```
+
+`script.js` is included even though it often just contains `import './style.scss';` — without it, webpack has no entry for the shared frontend styles. See `assets/example-blocks/blocks/example/script.js` for the canonical one-line example.
+
+### ACF Block (`src/blocks-acf/{name}/`)
+
+```
+block.json              # metadata with "acf" key + renderCallback; set "script": "file:./script.js", "style": ["file:./style-script.css"]. Add "ignoreScripts": ["script"] ONLY when script.js is SCSS-only.
+{name}.twig             # Twig template
+style.scss              # styles — must be `import`ed by script.js so webpack builds style-script.css
+script.js               # REQUIRED — webpack entry. Even if only `import './style.scss';`. Omit and SCSS never compiles → block renders unstyled.
+acf-json/*.json         # ACF field group
+```
+
+See [skills/create-acf-block.md](../skills/create-acf-block.md) for the full procedure and required block.json keys — always load it before scaffolding a new ACF block. For custom WP blocks see [skills/create-block.md](../skills/create-block.md).
+
+**ACF field data shape (load-bearing — applies any time you seed an ACF block).** Markup is `wp:chisel/{name}`, NOT `wp:acf/{name}` — Chisel uses `register_block_type()`. Every `data` field needs a `_{name}: "field_key"` partner. ACF resolves values via these key-pointers; without them `get_fields()` returns empty. Repeaters need `items: N`, `_items: "field_B"` plus every sub-field per row with its key:
+
+```json
+"data": {
+  "heading": "Hello", "_heading": "field_A",
+  "items": 2, "_items": "field_B",
+  "items_0_quote": "first",  "_items_0_quote": "field_C",
+  "items_1_quote": "second", "_items_1_quote": "field_C"
+}
+```
+
+### Pattern (`patterns/{slug}.php`)
+
+```php
+<?php
+/**
+ * Title: Pattern Name
+ * Slug: chisel/{slug}
+ * Categories: chisel-patterns/{category}
+ * Description: What this pattern does
+ * Keywords: keyword1, keyword2
+ *
+ * @package Chisel
+ */
+?>
+<!-- block markup with p-{slug} root wrapper -->
+```
+
+## Pattern categories
+
+`hero`, `features`, `cta`, `testimonials`, `team`, `pricing`, `text`, `gallery`, `faq`, `stats`, `logos`.
+
+## Root wrapper rule
+
+Every pattern has a single root `core/group` (or `core/cover`) with class `p-{slug}`. Required for:
+
+1. **Scoped styling** — custom class isolates pattern's inner blocks from same blocks elsewhere
+2. **Structural integrity** — single root keeps pattern as one selectable unit in editor
+
+Pattern SCSS: `src/styles/components/_p-{slug}.scss`, scoped under `.p-{slug}`.
+
+## Existing block styles
+
+Registered in `src/scripts/editor/blocks-styles.js` — **read that file for the current list** (the project may have added/removed variants since these docs were written). Each top-level `register*Styles()` method holds one block's variants:
+
+- `registerButtonsStyles()` → `core/button` variants (typically primary / secondary / tertiary, each with an `-outline` companion)
+- `registerSpacerStyles()` → `core/spacer` size variants used by `is-style-{name}` (e.g. `tiny`, `small`, `medium`, `large`, `xlarge`, `big`)
+
+## Existing block mods
+
+In `src/scripts/editor/mods/`:
+
+- **core.js**: `disableBottomMargin` toggle on all core/chisel blocks (adds `u-no-margin-bottom` class)
+- **blocks-alignment.js**: default alignment per block
+- **core-button.js**: button modifications
+- **core-spacer.js**: spacer modifications

@@ -15,3 +15,5 @@ Paste this at the start of every new Chisel session (new project or new conversa
 
 TASK:
 [YOUR TASK HERE] (Describe what you want.)
+
+README: <https://github.com/xfiveco/chisel-ai-coding-ruleset>

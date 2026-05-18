@@ -1,6 +1,4 @@
-# Chisel AI Rules
-
-Version: 1.0.0
+# Chisel AI Coding Ruleset
 
 A ruleset for AI coding agents (Claude Code, Cursor, etc.) working inside a Chisel WordPress theme. Ships with every new Chisel project and is read by the agent at the start of every task.
 

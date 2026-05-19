@@ -71,11 +71,48 @@ Slug: `primary-secondary`.
 
 For the per-mode procedure (Figma variable defs vs static asset / prompt parsing) and the apply-changes step order, see [skills/setup-theme-json.md](../skills/setup-theme-json.md). Reference only owns the _what_ (the inventory above and the constraints below).
 
+## Spacing between blocks
+
+Default to a `core/spacer` between every two sibling inner blocks (even when Figma uses a uniform `gap`) — gives editors draggable handles. `blockGap` and CSS `gap` don't, and `blockGap` is inconsistent across layouts.
+
+### Picking the spacer style
+
+For each spacer, derive the slug from `theme.json` instead of hardcoding:
+
+1. Read `settings.custom.gap` aliases from `theme.json` (each maps to a numeric `spacingSizes` slug, ultimately a rem value).
+2. Convert each alias's rem value to px (×16).
+3. Pick the alias whose px is closest to the Figma spacing. Use `"className": "is-style-{alias}"` on the spacer.
+
+If no alias is close enough, extend the scale in `theme.json` rather than picking a misfit.
+
+### Margin sync at project start
+
+Chisel auto-adds bottom margins to text/media blocks via `.c-block--{name}` (in `src/styles/blocks/_core.scss`). These stack against spacers and cause double-gap unless synced:
+
+1. Read Figma `text/*/paragraph-spacing` and `heading/*/paragraph-spacing` variables.
+2. Compare to current mixin defaults in `src/design/tools/`.
+3. Update each mixin's bottom margin to match Figma:
+   - Text blocks → `margin: 0 0 get-margin('{alias}')`
+   - Media/container blocks → `margin: 0 auto get-margin('{alias}')`
+
+### Suppressing auto-margins in patterns
+
+In pattern markup, set `"disableBottomMargin": true` + `"className": "u-no-margin-bottom"` on:
+
+- Root pattern wrapper
+- Every block immediately followed by a spacer
+- Every last child of any container
+
+In practice: nearly every non-spacer block inside patterns.
+
+### Layout trap
+
+**Spacers + `layout: flex` = double spacing.** Flex groups add `gap: var(--wp--style--block-gap)` on top of spacers. If using spacers → `layout: constrained` (default). Use `flex` only when you need flex features AND rely on its gap instead of spacers. Never mix.
+
 ## Special cases
 
 - **Container widths** → map to `contentSize`/`wideSize`, don't hardcode column pixel values
 - **SVG `<img>` tags** → always set explicit `width` and `height` (SVGs have no intrinsic size, render as 100x100 otherwise)
-- **Spacing between sibling blocks** → prefer `core/spacer` blocks over `blockGap` (inconsistent across layouts)
 
 ## Fonts
 

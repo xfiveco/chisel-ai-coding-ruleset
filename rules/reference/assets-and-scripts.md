@@ -70,6 +70,44 @@ Monochromatic icons use CSS `mask-image` (colorable via CSS). Color icons use `b
 
 Static icons for buttons are listed in `src/design/settings/_index.scss` as `$static-icons`. Button system uses `has-icon-{name}` classes with `icon-svg()` mixin.
 
+### Cleaning Figma-exported SVGs
+
+Figma's SVG export inlines `fill="var(--fill-0, #xxxxxx)"` and `width="100%"` / `height="100%"` attributes. Before saving to `assets/icons-source/{name}.svg`:
+
+- Strip `var(--fill-…)` wrappers; set `fill="currentColor"` (or remove `fill` entirely so the icon inherits via CSS `mask`).
+- Remove `width`/`height` attributes — the icon system sets them.
+- Keep the `viewBox` — it's required for scaling.
+
+## Swiper
+
+Initialize Swiper sliders via `data-*` attributes on `.swiper.js-slider` — never hand-instantiate in JS.
+
+| Attribute             | Purpose                                                                |
+| --------------------- | ---------------------------------------------------------------------- |
+| `data-slides-per-view`| Number of slides visible per row, or `"auto"` (requires fixed widths)  |
+| `data-space-between`  | Gap between slides (px)                                                |
+| `data-arrows`         | `true` / `false`                                                       |
+| `data-dots`           | `true` / `false`                                                       |
+| `data-breakpoints`    | JSON for per-breakpoint overrides                                      |
+| `data-args`           | JSON for any other Swiper option                                       |
+
+`slidesPerView: "auto"` requires each slide to have a fixed width in CSS; otherwise use numeric values + `data-breakpoints`.
+
+### Customizing default arrows
+
+The framework renders text arrows in `.swiper-button` `::after`. To replace with custom icons:
+
+```scss
+.swiper-button {
+  &::after { content: none; } // hide framework text arrow
+  &::before { @include icon-svg('arrow-right'); } // your icon
+}
+```
+
+### Pagination
+
+When the pagination container is a flex row, bullets need `flex-shrink: 0` or they collapse to 0 width and disappear.
+
 ## Chisel hooks reference
 
 The lists below cover the load-bearing hooks. **Not exhaustive** — for less common hooks (CPT/taxonomy defaults like `chisel_default_post_type_supports_{slug}`, per-asset enqueue gates like `chisel_enqueue_frontend_script`, loader-behavior hooks like `chisel_async_scripts` / `chisel_preload_styles_start_with`, block hooks like `chisel_styles_inline_size_limit`, etc.), grep `core/` for `apply_filters` / `do_action` to find the canonical set.

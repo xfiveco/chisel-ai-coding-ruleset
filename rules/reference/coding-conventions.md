@@ -30,20 +30,20 @@ When creating a new feature class, mirror an existing file like `custom/app/WP/A
 
 Helper classes in `core/Helpers/` — most have static methods. Read them before reinventing a utility:
 
-| Helper                         | Purpose                                                              |
-| ------------------------------ | -------------------------------------------------------------------- |
-| `ThemeHelpers`                 | Theme.json color palette access, post thumbnails registration        |
-| `AssetsHelpers`                | Asset registration / enqueueing / dependency resolution              |
-| `ImageHelpers`                 | Responsive images, srcset, `ChiselImage` helpers                     |
-| `BlocksHelpers`                | ACF block render callback, block inline CSS                          |
-| `AcfHelpers`                   | ACF field group helpers                                              |
-| `DataHelpers`                  | Array/string sanitization, structured-data utilities                 |
-| `CacheHelpers`                 | Timber cache expiry resolution                                       |
-| `AjaxHelpers`                  | REST/AJAX response shaping                                           |
-| `CommentsHelpers`              | Comment list rendering                                               |
-| `YoastHelpers`                 | `breadcrumbs()` and Yoast availability checks                        |
-| `WoocommerceHelpers`           | WC product / category helpers                                        |
-| `GravityFormsHelpers`          | GF availability checks, form rendering helpers                       |
+| Helper                | Purpose                                                       |
+| --------------------- | ------------------------------------------------------------- |
+| `ThemeHelpers`        | Theme.json color palette access, post thumbnails registration |
+| `AssetsHelpers`       | Asset registration / enqueueing / dependency resolution       |
+| `ImageHelpers`        | Responsive images, srcset, `ChiselImage` helpers              |
+| `BlocksHelpers`       | ACF block render callback, block inline CSS                   |
+| `AcfHelpers`          | ACF field group helpers                                       |
+| `DataHelpers`         | Array/string sanitization, structured-data utilities          |
+| `CacheHelpers`        | Timber cache expiry resolution                                |
+| `AjaxHelpers`         | REST/AJAX response shaping                                    |
+| `CommentsHelpers`     | Comment list rendering                                        |
+| `YoastHelpers`        | `breadcrumbs()` and Yoast availability checks                 |
+| `WoocommerceHelpers`  | WC product / category helpers                                 |
+| `GravityFormsHelpers` | GF availability checks, form rendering helpers                |
 
 JS helpers: `src/scripts/modules/utils.js` for shared frontend utilities (DOM, throttling, etc.). Import from there before writing new ones.
 
@@ -82,6 +82,7 @@ get-box-shadow('3')
 get-letter-spacing('loose')
 get-transition()            // default 'normal'
 rgba-color('primary', 50%)  // semi-transparent
+px-rem(24)                  // one-off px → rem conversion (use for non-tokenized values)
 
 @include bp('large') {
 } // min-width breakpoint

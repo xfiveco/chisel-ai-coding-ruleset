@@ -160,35 +160,49 @@ Full hero section with overlay color, top/bottom spacers, centered headline, lea
 
 ```html
 <!-- wp:cover {"overlayColor":"foreground","isUserOverlayColor":true,"align":"full","disableBottomMargin":true,"className":"u-no-margin-bottom","layout":{"type":"constrained","contentSize":"848px","wideSize":"1072px"}} -->
-<div class="wp-block-cover alignfull u-no-margin-bottom"><span aria-hidden="true" class="wp-block-cover__background has-foreground-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container"><!-- wp:spacer {"height":"auto","className":"is-style-big"} -->
-<div style="height:auto" aria-hidden="true" class="wp-block-spacer is-style-big"></div>
-<!-- /wp:spacer -->
+<div class="wp-block-cover alignfull u-no-margin-bottom">
+  <span
+    aria-hidden="true"
+    class="wp-block-cover__background has-foreground-background-color has-background-dim-100 has-background-dim"
+  ></span>
+  <div class="wp-block-cover__inner-container">
+    <!-- wp:spacer {"height":"auto","className":"is-style-big"} -->
+    <div style="height:auto" aria-hidden="true" class="wp-block-spacer is-style-big"></div>
+    <!-- /wp:spacer -->
 
-<!-- wp:heading {"textAlign":"center","level":1} -->
-<h1 class="wp-block-heading has-text-align-center">Headline</h1>
-<!-- /wp:heading -->
+    <!-- wp:heading {"textAlign":"center","level":1} -->
+    <h1 class="wp-block-heading has-text-align-center">Headline</h1>
+    <!-- /wp:heading -->
 
-<!-- wp:paragraph {"align":"center","fontSize":"large"} -->
-<p class="has-text-align-center has-large-font-size">Lead paragraph.</p>
-<!-- /wp:paragraph -->
+    <!-- wp:paragraph {"align":"center","fontSize":"large"} -->
+    <p class="has-text-align-center has-large-font-size">Lead paragraph.</p>
+    <!-- /wp:paragraph -->
 
-<!-- wp:spacer {"height":"auto","className":"is-style-large"} -->
-<div style="height:auto" aria-hidden="true" class="wp-block-spacer is-style-large"></div>
-<!-- /wp:spacer -->
+    <!-- wp:spacer {"height":"auto","className":"is-style-large"} -->
+    <div style="height:auto" aria-hidden="true" class="wp-block-spacer is-style-large"></div>
+    <!-- /wp:spacer -->
 
-<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
-<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-primary has-icon has-icon-arrow-right","buttonIcon":"arrow-right"} -->
-<div class="wp-block-button is-style-primary has-icon has-icon-arrow-right"><a class="wp-block-button__link wp-element-button" href="#">Get started</a></div>
-<!-- /wp:button -->
+    <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+    <div class="wp-block-buttons">
+      <!-- wp:button {"className":"is-style-primary has-icon has-icon-arrow-right","buttonIcon":"arrow-right"} -->
+      <div class="wp-block-button is-style-primary has-icon has-icon-arrow-right">
+        <a class="wp-block-button__link wp-element-button" href="#">Get started</a>
+      </div>
+      <!-- /wp:button -->
 
-<!-- wp:button {"className":"is-style-primary-outline"} -->
-<div class="wp-block-button is-style-primary-outline"><a class="wp-block-button__link wp-element-button">Learn more</a></div>
-<!-- /wp:button --></div>
-<!-- /wp:buttons -->
+      <!-- wp:button {"className":"is-style-primary-outline"} -->
+      <div class="wp-block-button is-style-primary-outline">
+        <a class="wp-block-button__link wp-element-button">Learn more</a>
+      </div>
+      <!-- /wp:button -->
+    </div>
+    <!-- /wp:buttons -->
 
-<!-- wp:spacer {"height":"auto","className":"is-style-big"} -->
-<div style="height:auto" aria-hidden="true" class="wp-block-spacer is-style-big"></div>
-<!-- /wp:spacer --></div></div>
+    <!-- wp:spacer {"height":"auto","className":"is-style-big"} -->
+    <div style="height:auto" aria-hidden="true" class="wp-block-spacer is-style-big"></div>
+    <!-- /wp:spacer -->
+  </div>
+</div>
 <!-- /wp:cover -->
 ```
 
@@ -200,15 +214,27 @@ Use `core/media-text` for image-beside-content sections (feature rows). Image le
 
 ```html
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|100","bottom":"var:preset|spacing|100"}}},"backgroundColor":"primary","layout":{"type":"default"}} -->
-<div class="wp-block-group alignfull has-primary-background-color has-background" style="padding-top:var(--wp--preset--spacing--100);padding-bottom:var(--wp--preset--spacing--100)"><!-- wp:media-text {"mediaId":217,"mediaType":"image","mediaSizeSlug":"large","disableBottomMargin":true,"className":"u-no-margin-bottom"} -->
-<div class="wp-block-media-text is-stacked-on-mobile u-no-margin-bottom"><figure class="wp-block-media-text__media"><img src="..." alt="" class="wp-image-217 size-large"/></figure><div class="wp-block-media-text__content"><!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Feature heading</h3>
-<!-- /wp:heading -->
+<div
+  class="wp-block-group alignfull has-primary-background-color has-background"
+  style="padding-top:var(--wp--preset--spacing--100);padding-bottom:var(--wp--preset--spacing--100)"
+>
+  <!-- wp:media-text {"mediaId":217,"mediaType":"image","mediaSizeSlug":"large","disableBottomMargin":true,"className":"u-no-margin-bottom"} -->
+  <div class="wp-block-media-text is-stacked-on-mobile u-no-margin-bottom">
+    <figure class="wp-block-media-text__media">
+      <img src="..." alt="" class="wp-image-217 size-large" />
+    </figure>
+    <div class="wp-block-media-text__content">
+      <!-- wp:heading {"level":3} -->
+      <h3 class="wp-block-heading">Feature heading</h3>
+      <!-- /wp:heading -->
 
-<!-- wp:paragraph -->
-<p>Feature description.</p>
-<!-- /wp:paragraph --></div></div>
-<!-- /wp:media-text --></div>
+      <!-- wp:paragraph -->
+      <p>Feature description.</p>
+      <!-- /wp:paragraph -->
+    </div>
+  </div>
+  <!-- /wp:media-text -->
+</div>
 <!-- /wp:group -->
 ```
 
@@ -220,31 +246,38 @@ For sections that pull live content (blog feed, latest case studies hardcoded on
 
 ```html
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|100","bottom":"var:preset|spacing|100"}}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--100);padding-bottom:var(--wp--preset--spacing--100)"><!-- wp:heading -->
-<h2 class="wp-block-heading">Latest posts</h2>
-<!-- /wp:heading -->
+<div
+  class="wp-block-group alignfull"
+  style="padding-top:var(--wp--preset--spacing--100);padding-bottom:var(--wp--preset--spacing--100)"
+>
+  <!-- wp:heading -->
+  <h2 class="wp-block-heading">Latest posts</h2>
+  <!-- /wp:heading -->
 
-<!-- wp:query {"queryId":3,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":false}} -->
-<div class="wp-block-query"><!-- wp:post-template {"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
-<!-- wp:post-featured-image /-->
+  <!-- wp:query {"queryId":3,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":false}} -->
+  <div class="wp-block-query">
+    <!-- wp:post-template {"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
+    <!-- wp:post-featured-image /-->
 
-<!-- wp:post-date /-->
+    <!-- wp:post-date /-->
 
-<!-- wp:post-title /-->
-<!-- /wp:post-template -->
+    <!-- wp:post-title /-->
+    <!-- /wp:post-template -->
 
-<!-- wp:query-pagination -->
-<!-- wp:query-pagination-previous /-->
-<!-- wp:query-pagination-numbers /-->
-<!-- wp:query-pagination-next /-->
-<!-- /wp:query-pagination -->
+    <!-- wp:query-pagination -->
+    <!-- wp:query-pagination-previous /-->
+    <!-- wp:query-pagination-numbers /-->
+    <!-- wp:query-pagination-next /-->
+    <!-- /wp:query-pagination -->
 
-<!-- wp:query-no-results -->
-<!-- wp:paragraph -->
-<p>No results.</p>
-<!-- /wp:paragraph -->
-<!-- /wp:query-no-results --></div>
-<!-- /wp:query --></div>
+    <!-- wp:query-no-results -->
+    <!-- wp:paragraph -->
+    <p>No results.</p>
+    <!-- /wp:paragraph -->
+    <!-- /wp:query-no-results -->
+  </div>
+  <!-- /wp:query -->
+</div>
 <!-- /wp:group -->
 ```
 

@@ -1,12 +1,22 @@
 ---
+name: chisel-create-component
 description: Create a reusable Twig component with SCSS. For shared UI elements used across templates (not Gutenberg blocks) — e.g. header, footer, nav, post cards, pagination.
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - AskUserQuestion
+  - TodoWrite
 ---
 
 # Create Twig Component
 
-**Load [reference/twig-templating.md](../reference/twig-templating.md) first** — Timber context, include syntax, naming conventions, where templates live (`views/`, not `custom/views/`). This skill is the _how_; reference is the _what_. Then load RULES.md if you haven't.
+**Load [reference/twig-templating.md](../../rules/reference/twig-templating.md) first** — Timber context, include syntax, naming conventions, where templates live (`views/`, not `custom/views/`). This skill is the _how_; reference is the _what_.
 
-For Gutenberg editor content, use [create-pattern](create-pattern.md), [create-block](create-block.md), or [create-acf-block](create-acf-block.md) instead — components are for shared UI in PHP templates.
+For Gutenberg editor content, use [create-pattern](../chisel-create-pattern/SKILL.md), [create-block](../chisel-create-block/SKILL.md), or [create-acf-block](../chisel-create-acf-block/SKILL.md) instead — components are for shared UI in PHP templates.
 
 ## Procedure
 

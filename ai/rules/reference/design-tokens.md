@@ -56,8 +56,18 @@ Slugs: `none`, `tight`, `loose`, `looser`. Read `theme.json` `settings.custom.le
 
 ## Layout
 
-- Content width: `settings.layout.contentSize` (read `theme.json`)
-- Wide width: `settings.layout.wideSize` (read `theme.json`)
+- Content width: `settings.layout.contentSize` (read `theme.json`) — narrowest, used by `core/group` default and most text-heavy patterns. SCSS: `get-layout-size('content')`.
+- Wide width: `settings.layout.wideSize` (read `theme.json`) — used by `alignwide` and broader patterns. SCSS: `get-layout-size('wide')`.
+- Other named widths (frame, container, narrow…): `settings.custom.layout.{name}` in `theme.json`. SCSS: `get-layout('{name}')`. Example: `settings.custom.layout.frame-width: "67rem"` for the 1072px header/footer frame → `max-width: get-layout('frame-width')`.
+
+### Width-token decision ladder
+
+1. **Text content body** (narrowest) → `contentSize` via `get-layout-size('content')`.
+2. **Wide patterns** (grids, image bands) → `wideSize` via `get-layout-size('wide')`. Apply via `alignwide` className.
+3. **Anything else recurring** (header/footer frame, narrow CTA card, sidebar rail) → new `settings.custom.layout.{name}` slug + use `get-layout('{name}')`.
+4. **Truly one-off, never repeated** → may stay as a raw `px-rem(…)` in pattern SCSS, but flag it: if a second pattern needs the same width, promote to a token.
+
+**Never hardcode `max-width: px-rem(N)` for a value that recurs.** Two patterns with the same hardcoded width = the token should already exist.
 
 ## Gradients
 

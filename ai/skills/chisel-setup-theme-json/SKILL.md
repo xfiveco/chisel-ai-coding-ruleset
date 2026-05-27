@@ -1,10 +1,21 @@
 ---
+name: chisel-setup-theme-json
 description: Bootstrap theme.json from a design spec (Figma variables, static mockups, or user prompt). Translates the design system into theme.json tokens so later work uses `var(--wp--preset--*)` instead of raw values. Run once per project.
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - AskUserQuestion
+  - TodoWrite
+  - mcp__plugin_figma_figma__*
 ---
 
 # theme.json Bootstrap
 
-**Load RULES.md first.** Run this BEFORE building any screens, patterns, or blocks.
+Run this BEFORE building any screens, patterns, or blocks.
 
 ## Spec source
 
@@ -44,17 +55,17 @@ Never skip — jumping straight to section markup without knowing the token sour
 
 ### 3. Map spec → Chisel slugs
 
-Chisel uses a fixed taxonomy. Reuse existing slug names whenever possible so SCSS keeps working. See [reference/design-tokens.md](../reference/design-tokens.md) for the full slug → meaning map.
+Chisel uses a fixed taxonomy. Reuse existing slug names whenever possible so SCSS keeps working. See [reference/design-tokens.md](../../rules/reference/design-tokens.md) for the full slug → meaning map.
 
 **Rule:** if the spec has richer structure (e.g., `surface/muted`, `border/subtle`, `brand/tertiary`), add as new slugs alongside existing ones — don't force into existing slots.
 
-**Do NOT keep Chisel starter values if they diverge from the spec.** The Chisel defaults are a starting point, not the final product ([CLAUDE.md](../../CLAUDE.md)). This applies to spacing especially — "close enough" is not acceptable. If the spec uses 16/24/32/48/64/96 and Chisel's default scale is 4/8/12/16/20/24/28/32/48, **replace the scale with the spec's values** (keeping the same slug numbers so SCSS keeps resolving). Same for colors and fonts: values must match the spec exactly.
+**Do NOT keep Chisel starter values if they diverge from the spec.** The Chisel defaults are a starting point, not the final product ([CLAUDE.md](../../../CLAUDE.md)). This applies to spacing especially — "close enough" is not acceptable. If the spec uses 16/24/32/48/64/96 and Chisel's default scale is 4/8/12/16/20/24/28/32/48, **replace the scale with the spec's values** (keeping the same slug numbers so SCSS keeps resolving). Same for colors and fonts: values must match the spec exactly.
 
 **Search/replace for slug renames.** If you need to rename a slug (color, font-size, spacing), always follow with a project-wide SCSS search/replace for `get-color('old-slug')`, `get-font-size('old-slug')`, `get-margin('old-slug')`, etc. Never leave stale references.
 
 ### 4. Protected slugs (DO NOT RENAME)
 
-Full list in [reference/design-tokens.md](../reference/design-tokens.md) (palette, named aliases). These are referenced by name in SCSS/JS — renaming silently breaks the build. Before renaming any slug, grep for references:
+Full list in [reference/design-tokens.md](../../rules/reference/design-tokens.md) (palette, named aliases). These are referenced by name in SCSS/JS — renaming silently breaks the build. Before renaming any slug, grep for references:
 
 ```
 Grep: get-color\('{slug}'\)  in  src/
@@ -95,8 +106,8 @@ If mismatch: either add the missing slug or update the SCSS.
 
 Once theme.json is stable and SCSS builds:
 
-- **Figma mode** → invoke [figma-to-chisel](figma-to-chisel.md) for each page.
-- **Static-asset / prompt mode** → proceed to [adapt-base-styles](adapt-base-styles.md), then [create-pattern](create-pattern.md) / [create-acf-block](create-acf-block.md) / [create-cpt](create-cpt.md) as needed.
+- **Figma mode** → invoke [figma-to-chisel](../chisel-figma-to-chisel/SKILL.md) for each page.
+- **Static-asset / prompt mode** → proceed to [adapt-base-styles](../chisel-adapt-base-styles/SKILL.md), then [create-pattern](../chisel-create-pattern/SKILL.md) / [create-acf-block](../chisel-create-acf-block/SKILL.md) / [create-cpt](../chisel-create-cpt/SKILL.md) as needed.
 
 ## Output report
 

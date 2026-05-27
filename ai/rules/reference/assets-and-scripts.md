@@ -2,7 +2,7 @@
 
 ## Asset registration
 
-Managed by `core/WP/Assets.php`. Add custom scripts/styles via filters in `custom/app/WP/Assets.php` (`filter_hooks()` method, `HooksSingleton` trait) — **not** in `custom/functions.php` (see [RULES.md "Architecture"](../RULES.md#architecture)). The filter hooks below all apply:
+Managed by `core/WP/Assets.php`. Add custom scripts/styles via filters in `custom/app/WP/Assets.php` (`filter_hooks()` method, `HooksSingleton` trait) — **not** in `custom/functions.php` (see [CLAUDE.md "Architecture"](../../../CLAUDE.md#architecture-core-vs-custom)). The filter hooks below all apply:
 
 | Context         | Styles filter                   | Scripts filter            |
 | --------------- | ------------------------------- | ------------------------- |
@@ -82,14 +82,14 @@ Figma's SVG export inlines `fill="var(--fill-0, #xxxxxx)"` and `width="100%"` / 
 
 Initialize Swiper sliders via `data-*` attributes on `.swiper.js-slider` — never hand-instantiate in JS.
 
-| Attribute             | Purpose                                                                |
-| --------------------- | ---------------------------------------------------------------------- |
-| `data-slides-per-view`| Number of slides visible per row, or `"auto"` (requires fixed widths)  |
-| `data-space-between`  | Gap between slides (px)                                                |
-| `data-arrows`         | `true` / `false`                                                       |
-| `data-dots`           | `true` / `false`                                                       |
-| `data-breakpoints`    | JSON for per-breakpoint overrides                                      |
-| `data-args`           | JSON for any other Swiper option                                       |
+| Attribute              | Purpose                                                               |
+| ---------------------- | --------------------------------------------------------------------- |
+| `data-slides-per-view` | Number of slides visible per row, or `"auto"` (requires fixed widths) |
+| `data-space-between`   | Gap between slides (px)                                               |
+| `data-arrows`          | `true` / `false`                                                      |
+| `data-dots`            | `true` / `false`                                                      |
+| `data-breakpoints`     | JSON for per-breakpoint overrides                                     |
+| `data-args`            | JSON for any other Swiper option                                      |
 
 `slidesPerView: "auto"` requires each slide to have a fixed width in CSS; otherwise use numeric values + `data-breakpoints`.
 
@@ -99,8 +99,12 @@ The framework renders text arrows in `.swiper-button` `::after`. To replace with
 
 ```scss
 .swiper-button {
-  &::after { content: none; } // hide framework text arrow
-  &::before { @include icon-svg('arrow-right'); } // your icon
+  &::after {
+    content: none;
+  } // hide framework text arrow
+  &::before {
+    @include icon-svg('arrow-right');
+  } // your icon
 }
 ```
 

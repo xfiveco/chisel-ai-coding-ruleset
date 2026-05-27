@@ -1,10 +1,22 @@
 ---
+name: chisel-adapt-header-footer
 description: Adapt header, footer, navigation, and logo to match a target spec. Headers/footers are Twig templates (not patterns) in Chisel. Spec source can be Figma, static assets, or user prompt.
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - AskUserQuestion
+  - TodoWrite
+  - mcp__xfive-mcp-chisel__*
+  - mcp__plugin_figma_figma__*
 ---
 
 # Adapt Header & Footer
 
-**Load RULES.md first.** Headers and footers are Twig templates — NOT patterns or blocks. Edit directly in `views/components/`. The `custom/` directory is for PHP overrides only; Twig templates live in `views/`.
+Headers and footers are Twig templates — NOT patterns or blocks. Edit directly in `views/components/`. The `custom/` directory is for PHP overrides only; Twig templates live in `views/`.
 
 ## Files involved
 
@@ -41,7 +53,7 @@ Extract in all modes: background, border, nav style, CTA button variant, icons, 
 
 ### 2. Set up ACF Options (if not done)
 
-Use [create-acf-options](create-acf-options.md) to register "Theme Settings" page with tabs (Header, Footer, Social, etc.). Add `options` to Timber context:
+Use [create-acf-options](../chisel-create-acf-options/SKILL.md) to register "Theme Settings" page with tabs (Header, Footer, Social, etc.). Add `options` to Timber context:
 
 ```php
 // custom/app/WP/Site.php

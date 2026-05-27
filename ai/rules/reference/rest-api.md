@@ -59,7 +59,7 @@ public function register_routes( array $routes ): array {
 }
 ```
 
-Then bootstrap the class in `custom/functions.php` with `\Chisel\WP\Custom\Ajax::get_instance();`. See [RULES.md "Architecture"](../RULES.md#architecture).
+Then bootstrap the class in `custom/functions.php` with `\Chisel\WP\Custom\Ajax::get_instance();`. See [CLAUDE.md "Architecture"](../../../CLAUDE.md#architecture-core-vs-custom).
 
 Endpoint available at: `/wp-json/chisel/v2/ajax/search/?query=term`
 

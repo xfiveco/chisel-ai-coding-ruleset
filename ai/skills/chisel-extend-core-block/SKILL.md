@@ -1,10 +1,20 @@
 ---
+name: chisel-extend-core-block
 description: Extend a core WordPress block — add block styles (CSS variants), editor toggles (mods), or SCSS customizations. Preferred over creating custom blocks for simple variations.
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - AskUserQuestion
+  - TodoWrite
 ---
 
 # Extend Core Block
 
-**Load [reference/blocks.md](../reference/blocks.md) first** — existing block styles, existing block mods, and where they live in `src/scripts/editor/`. This skill is the _how_; reference is the _what_. Then load RULES.md if you haven't.
+**Load [reference/blocks.md](../../rules/reference/blocks.md) first** — existing block styles, existing block mods, and where they live in `src/scripts/editor/`. This skill is the _how_; reference is the _what_.
 
 Three approaches, simplest first:
 
@@ -20,9 +30,9 @@ Three approaches, simplest first:
 | On/off toggle that adds a class     | Block mod                       | Medium |
 | New sidebar control (select, input) | Block mod                       | Medium |
 | Always-on default styling           | SCSS only                       | Lowest |
-| Complex rendering changes           | [create-block](create-block.md) | High   |
+| Complex rendering changes           | [create-block](../chisel-create-block/SKILL.md) | High   |
 
-**Rule:** if the change should be the global default (not a variant), update the base style directly — see [adapt-base-styles](adapt-base-styles.md). Don't create a block style for something that should be the default.
+**Rule:** if the change should be the global default (not a variant), update the base style directly — see [adapt-base-styles](../chisel-adapt-base-styles/SKILL.md). Don't create a block style for something that should be the default.
 
 ## 1. Block Style
 
@@ -79,9 +89,9 @@ Adds custom toggle/select/input to block sidebar. Applies a class or modifies re
 
 ### Procedure
 
-1. Create `src/scripts/editor/mods/{block-name}-{feature}.js` — see [templates/block-mod-template.md](../templates/block-mod-template.md) for full scaffold
+1. Create `src/scripts/editor/mods/{block-name}-{feature}.js` — see [templates/block-mod-template.md](../../rules/templates/block-mod-template.md) for full scaffold
 2. Import in `src/scripts/editor/blocks-mods.js`: `import './mods/{block-name}-{feature}';`
-3. If attribute needs REST/MCP validation, register server-side via filter in a `custom/app/WP/{Feature}.php` class (e.g. extend `custom/app/WP/Blocks.php` or create a new feature class) using the `HooksSingleton` trait — **never put hooks in `custom/functions.php`** (see [RULES.md "Architecture"](../RULES.md#architecture)):
+3. If attribute needs REST/MCP validation, register server-side via filter in a `custom/app/WP/{Feature}.php` class (e.g. extend `custom/app/WP/Blocks.php` or create a new feature class) using the `HooksSingleton` trait — **never put hooks in `custom/functions.php`** (see [CLAUDE.md "Architecture"](../../../CLAUDE.md#architecture-core-vs-custom)):
 
 ```php
 // custom/app/WP/Blocks.php (or similar feature class)

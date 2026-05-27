@@ -1,18 +1,32 @@
 ---
+name: chisel-adapt-base-styles
 description: Adapt Chisel's base styles (buttons, typography, links, forms, spacing) to match a target spec. Run BEFORE creating patterns so they inherit correct defaults. Spec source can be Figma, static assets, or user prompt.
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - AskUserQuestion
+  - TodoWrite
 ---
 
 # Adapt Base Styles
 
-**Load RULES.md first.** Do this before writing pattern SCSS — patterns should inherit correct base styles, not override them.
+Do this before writing pattern SCSS — patterns should inherit correct base styles, not override them.
 
 Spec source: Figma `get_design_context`, mockup/screenshot, or a written description from the user. Procedure is identical — only step 1 (extraction) differs.
+
+## Starter values vs current values (read before comparing)
+
+Documented token values, mixin defaults, and block-style lists in these skills and reference docs reflect **Chisel starter state**. Always read the actual file (`theme.json`, the mixin SCSS in `src/design/tools/`, `src/scripts/editor/blocks-styles.js`) for current state before comparing to the spec — earlier project work may have already adapted them. Only protected slug **names** (palette + spacing aliases) are stable; values are project-specific.
 
 ## Decision: global vs pattern-scoped
 
 1. **Should look this way everywhere?** → Update the base mixin/element SCSS. Patterns inherit automatically.
 2. **One-off variation for a specific section?** → Scope in pattern SCSS under `.p-{slug}`.
-3. **Reusable variant but not default?** → Add a block style via [extend-core-block](extend-core-block.md).
+3. **Reusable variant but not default?** → Add a block style via [extend-core-block](../chisel-extend-core-block/SKILL.md).
 
 **Default to global.** Don't duplicate pattern-scoped overrides for every section when the design wants different defaults.
 
@@ -37,6 +51,14 @@ Spec source: Figma `get_design_context`, mockup/screenshot, or a written descrip
 | Component button SCSS                                   | `src/styles/components/_buttons.scss`                |
 
 **Before building any pattern that uses a button, open `src/design/tools/_buttons.scss` and compare every property of `@mixin button()` to the spec's button:** padding (horizontal/vertical), font-family, font-size, font-weight, line-height, border-width, border-radius, transition. Read the mixin's current values — they may already have been adapted from Chisel starter values — and update only what diverges from the spec. Same procedure for `button-small`/`button-large` size variants and `button-primary`/`button-secondary`/`button-tertiary` color/border specifics.
+
+**Read the button variant explicitly from the Figma component description, not from the section context.** A button on a dark hero is NOT automatically the "primary" variant — it could be tertiary (text-only). When `get_design_context` returns a button component, look at:
+
+1. The **component description** (e.g. "Button component (3 variants): primary, secondary, tertiary") to know the variant names.
+2. The **rendered markup** of the specific instance — does it have a `bg-` class? a `border-` class? Or just `flex items-center px-… py-…` with text + icon (= tertiary, transparent)?
+3. The **node name** when component instances are individually named (e.g. "button/tertiary/dark").
+
+Mapping rule: variant maps to `is-style-{variant}` (Gutenberg button block) or `c-btn--{variant}` (raw `.c-btn`). The light/dark theme is an orthogonal axis — append `is-style-on-dark` / `c-btn--on-dark` for that. Conflating the two (assuming "dark theme = primary variant on dark") silently picks the wrong visual.
 
 ### Per-block defaults (check BEFORE building a pattern that uses the block)
 
@@ -132,6 +154,16 @@ Don't inline SVG in Twig/patterns when a registered icon would do — single sou
 | ------------------- | ---------------------------------------------------------------------- |
 | Header, footer, nav | `src/styles/components/_header.scss`, `_footer.scss`, `_main-nav.scss` |
 | Nav toggle          | `src/styles/components/main-nav-toggle/`                               |
+
+## Tokenize before you write SCSS (HARD RULE)
+
+Before adding ANY hardcoded `px-rem(…)`, hex literal, or magic number into a base style file: check if it's a recurring value. If yes (or could be), it belongs in `theme.json` + a `get-*` helper, not in SCSS.
+
+Width-token decision ladder + the `settings.custom.layout.*` slot for frame widths and similar recurring widths → [reference/design-tokens.md "Layout"](../../rules/reference/design-tokens.md#layout). Same principle applies to padding/margin steps, radii, shadows, transitions: extend `theme.json` rather than introducing raw numbers in SCSS.
+
+## Removing unwanted seeded content (HARD RULE)
+
+If the starter theme ships widgets, posts, blocks, or ACF defaults the design doesn't want — **remove them at the source** via MCP (`xfive-widgets-widget-remove`, `xfive-posts-post-trash`, etc.) or by asking the user. **Never `display: none` to hide them.** See [CLAUDE.md "Content vs CSS"](../../../CLAUDE.md#content-vs-css-hard-rule).
 
 ## Verification
 

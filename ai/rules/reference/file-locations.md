@@ -56,6 +56,6 @@ Block-specific field groups: `src/blocks-acf/{block-name}/acf-json/group_{hash}.
 
 ## Naming
 
-- PHP namespace: `Chisel\` (core), `Chisel\WP\Custom\` (custom)
+- PHP namespace: `Chisel\` (core), `Chisel\WP\Custom\` (custom). **The autoloader strips the `Custom` segment** — `Chisel\WP\Custom\Assets` → `custom/app/WP/Assets.php`, NOT `custom/app/WP/Custom/Assets.php`. See [CLAUDE.md "Architecture"](../../../CLAUDE.md#architecture-core-vs-custom).
 - CSS class prefixes: `c-` components, `o-` objects, `u-` utilities, `b-` blocks, `p-` patterns, `is-`/`has-` state
 - JS hook prefix: `js-` (separate from CSS)

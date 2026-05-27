@@ -1,17 +1,28 @@
 ---
+name: chisel-create-acf-block
 description: Create an ACF block — field-driven repeating content (sliders, testimonials, team grids, stats counters). Editors fill in structured fields rather than composing free-form block content.
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - AskUserQuestion
+  - TodoWrite
+  - mcp__xfive-mcp-chisel__*
 ---
 
 # Create ACF Block
 
-**Load [reference/blocks.md](../reference/blocks.md) first** — required file list, the build-pipeline rule (`script.js` as webpack entry), `ignoreScripts` rules, and ACF field-data shape (`_{name}: "field_key"` pointers) all live there. This skill is the _how_; reference is the _what_. Then load RULES.md if you haven't.
+**Load [reference/blocks.md](../../rules/reference/blocks.md) first** — required file list, the build-pipeline rule (`script.js` as webpack entry), `ignoreScripts` rules, and ACF field-data shape (`_{name}: "field_key"` pointers) all live there. This skill is the _how_; reference is the _what_.
 
-Use ACF blocks for repeatable, field-driven content. For interactive UI or free-form composition, see [create-block](create-block.md) or [create-pattern](create-pattern.md).
+Use ACF blocks for repeatable, field-driven content. For interactive UI or free-form composition, see [create-block](../chisel-create-block/SKILL.md) or [create-pattern](../chisel-create-pattern/SKILL.md).
 
 ## Procedure
 
-1. **Check CPT ladder first.** If the block displays entity-like repeating content (case studies, team, portfolio, events), run [section-mapping-decisions.md CPT decision](../reference/section-mapping-decisions.md#cpt-decision). If all 3 apply → CPT + CPT-driven block with `latest`/`selected` variants ([create-cpt.md](create-cpt.md) "Pair with a custom block"), NOT a repeater here.
-2. **Create the files** at `src/blocks-acf/{block-name}/`. File list and `block.json` script/style key requirements: [reference/blocks.md "ACF Block"](../reference/blocks.md#acf-block-srcblocks-acfname). Use the templates below for `block.json`, the Twig template, `style.scss`, `script.js`, and the ACF field group JSON.
+1. **Check CPT ladder first.** If the block displays entity-like repeating content (case studies, team, portfolio, events), run [section-mapping-decisions.md CPT decision](../../rules/reference/section-mapping-decisions.md#cpt-decision). If all 3 apply → CPT + CPT-driven block with `latest`/`selected` variants ([create-cpt.md](../chisel-create-cpt/SKILL.md) "Pair with a custom block"), NOT a repeater here.
+2. **Create the files** at `src/blocks-acf/{block-name}/`. File list and `block.json` script/style key requirements: [reference/blocks.md "ACF Block"](../../rules/reference/blocks.md#acf-block-srcblocks-acfname). Use the templates below for `block.json`, the Twig template, `style.scss`, `script.js`, and the ACF field group JSON.
 3. **Populate any preset ACF option fields** immediately via `xfive-acf-acf-field-update`.
 4. **Run `npm run dev` or `build-scripts` to compile** — Chisel registers blocks from `build/blocks-acf/`, NOT `src/blocks-acf/`. Until the build runs, the block won't appear and the editor will show "your site doesn't include {block-name} block" on existing posts referencing it.
 5. **Verify** in editor under "Chisel Blocks", then `xfive-blocks-block-schema` to confirm registration.
@@ -63,7 +74,7 @@ Follow `src/blocks-acf/slider/block.json`:
 }
 ```
 
-See [reference/blocks.md](../reference/blocks.md#file-structures) "Build-pipeline rule" for the broader principle: every SCSS file must be imported by a JS entry listed in block.json or it will not compile.
+See [reference/blocks.md](../../rules/reference/blocks.md#file-structures) "Build-pipeline rule" for the broader principle: every SCSS file must be imported by a JS entry listed in block.json or it will not compile.
 
 ### {block-name}.twig
 
@@ -153,7 +164,7 @@ Default `"required": 0` on all fields and `"min": 0` on repeaters. Required fiel
 
 ## Default alignment
 
-Add via `chisel_editor_scripts` filter inside `custom/app/WP/Assets.php` (the class is already registered in `custom/functions.php` via `get_instance()`). Use the class's existing `filter_hooks()` method — don't add hooks directly in `custom/functions.php` (see [RULES.md "Architecture"](../RULES.md#architecture)):
+Add via `chisel_editor_scripts` filter inside `custom/app/WP/Assets.php` (the class is already registered in `custom/functions.php` via `get_instance()`). Use the class's existing `filter_hooks()` method — don't add hooks directly in `custom/functions.php` (see [CLAUDE.md "Architecture"](../../../CLAUDE.md#architecture-core-vs-custom)):
 
 ```php
 // custom/app/WP/Assets.php
@@ -173,3 +184,4 @@ public function set_block_default_alignment( array $data ): array {
 2. Always populate content via ACF fields in editor — never hardcode in Twig.
 3. BEM class: `b-{block-name}`, `__element`, `--modifier`.
 4. Use `partials/block-edit-button.twig` for empty state.
+5. **Asset URLs in `style.scss` go through the `background-image()` mixin**, never raw `url('../../../assets/...')`. Webpack resolves `url()` from the bundle entry, not the partial; raw paths silently break the build. Drop assets flat into `assets/images/` and call `@include background-image('name', 'svg', $is-block: true)` from inside an ACF block — **`$is-block: true` is required** because blocks live one level deeper (`src/blocks-acf/{name}/`) than pattern SCSS (`src/styles/components/`). See `src/design/tools/_media.scss` for the mixin signature.

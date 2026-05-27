@@ -2,6 +2,28 @@
 
 For each distinct section/component in the spec (Figma node, mockup region, or described feature), apply this decision ladder. Stop at the first match — default to the simplest option that works. For file structures, existing styles/mods, and the build-pipeline rule, see [blocks.md](blocks.md).
 
+## Platform questions (answer first)
+
+Before applying the ladder, answer these four for the section/feature — the answers determine where the work belongs:
+
+1. **Content management** — editor-managed, code-managed, or mixed?
+2. **Reuse** — reusable across multiple pages, or one-off?
+3. **Data shape** — static, relational (CPT/taxonomy), or query-driven?
+4. **Interaction** — needs custom interaction (tabs, accordion, slider) or AJAX?
+
+## Recommended feature-building sequence
+
+When implementing a feature end-to-end, follow this order — it prevents costly rework (e.g., styling before templates stabilize, or building blocks before the data model exists):
+
+1. **Design tokens** — update `theme.json` and `src/design/` if new tokens are required
+2. **Content model** — CPTs, taxonomies, ACF fields, options pages
+3. **View model** — Timber class additions and Twig context
+4. **Templates** — page, archive, single, components, partials
+5. **Editor experience** — blocks or patterns
+6. **Styling** — SCSS in the right ITCSS layer
+7. **Behavior** — JS modules, sliders, filters, AJAX
+8. **Build and QA** — ask the user to run `npm run build` (see CLAUDE.md "Before completing any task")
+
 ## Quick pick
 
 | Need                                | Approach               | Skill                                               | Example                         |
@@ -20,10 +42,12 @@ For each distinct section/component in the spec (Figma node, mockup region, or d
 2. **Core block + block style** — section is a core block (button, spacer, quote) with a color/size variant → add `registerBlockStyle()` entry in `src/scripts/editor/blocks-styles.js` and style in `src/styles/blocks/_core-{name}.scss`. Use [extend-core-block](../skills/extend-core-block.md).
 3. **Core block + mod (toggle)** — on/off behavior (hide margin, reverse columns, invert colors) → block mod filter in `src/scripts/editor/mods/`. Use [extend-core-block](../skills/extend-core-block.md).
 4. **Pattern** — layout composed of several blocks (hero, features grid, CTA band, testimonials, logo strip, FAQ list, pricing table) → use [create-pattern](../skills/create-pattern.md). **Default for most section layouts.**
-5. **ACF block** — field-driven repeating content (slider, team grid, testimonials carousel, logo grid with links, stats counters) → use [create-acf-block](../skills/create-acf-block.md).
-6. **Custom WP block** — complex interactive UI (tabs, accordion, filterable portfolio, stepped form) → use [create-block](../skills/create-block.md). Reserve for truly unique, interactive components.
+5. **ACF block** — anything beyond a pure pattern that needs structured editor fields (slider, team grid, testimonials carousel, logo grid with links, stats counters, hero with file/image/link fields). **Default custom-block choice in Chisel.** Use [create-acf-block](../skills/create-acf-block.md).
+6. **Custom WP (native React) block** — STOP AND ASK THE USER FIRST. Reserve for cases where ACF fields genuinely can't express what the editor canvas needs (in-canvas interactive state, drag-to-reorder, `<InnerBlocks>` composability where editors place arbitrary nested blocks, performance-critical server-render unsuitability). State the specific justification before proposing native React. Use [create-block](../skills/create-block.md) only after user approval.
 
-> **Editability note:** Patterns are fully editable in the WP editor — they're composed of native blocks. "Editable in admin" is not a reason to choose ACF block over pattern. Choose ACF block (rung 5) only when content is _repeating with a fixed shape_ — N items where each item has the same set of fields (testimonials, logo grid, team cards). Choose custom WP block (rung 6) only when the editor needs interactive React UI in the canvas (tabs switching state, accordion, InnerBlocks composition).
+> **Editability note:** Patterns are fully editable in the WP editor — they're composed of native blocks. "Editable in admin" is not a reason to choose ACF block over pattern. Choose ACF block (rung 5) when content has structured fields the editor should fill via a form (single instance OR repeating with a fixed shape).
+>
+> **ACF vs native React (rung 5 vs 6):** ACF is the default. Native React requires user approval AND a documented exception — interactive editor canvas, true `<InnerBlocks>` composability, or performance need that rules out server rendering. A slider that's only interactive on the frontend, tabs that only toggle visibility on the frontend, an accordion whose expand/collapse runs in vanilla JS — all of these are ACF blocks with frontend JS. Native React is for editor-canvas interactivity, not frontend interactivity.
 
 ## Shared components rule
 

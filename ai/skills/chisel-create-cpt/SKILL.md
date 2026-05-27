@@ -1,10 +1,21 @@
 ---
+name: chisel-create-cpt
 description: Register a Custom Post Type (and optional taxonomy). Use when the design shows multiple instances of the same content shape (portfolio, team, case studies, services, events).
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - AskUserQuestion
+  - TodoWrite
+  - mcp__xfive-mcp-chisel__*
 ---
 
 # Create Custom Post Type
 
-**Run the CPT ladder in [reference/section-mapping-decisions.md](../reference/section-mapping-decisions.md#cpt-decision) first** — confirms a CPT is the right call (vs. ACF block / pattern / one-off page). This skill is the _how_; reference is the _what_. Then load RULES.md if you haven't.
+**Run the CPT ladder in [reference/section-mapping-decisions.md](../../rules/reference/section-mapping-decisions.md#cpt-decision) first** — confirms a CPT is the right call (vs. ACF block / pattern / one-off page). This skill is the _how_; reference is the _what_.
 
 ## Rules
 
@@ -97,7 +108,7 @@ When a CPT needs to appear on the homepage or other pages (latest N, manually-se
    - `count` (number): only shown when mode=latest (ACF conditional logic)
    - `selected_items` (relationship to CPT): only shown when mode=selected
    - Plus presentation fields (heading, closing text, CTA link)
-4. **Query inside filter hook** via `chisel_timber_acf_blocks_data_{slug}`. Add the handler to the existing `custom/app/WP/AcfBlocksData.php` class — **not** to `custom/functions.php` (see [RULES.md "Architecture"](../RULES.md#architecture)). Pattern follows the existing `case_studies()` and `team_members()` methods in that file:
+4. **Query inside filter hook** via `chisel_timber_acf_blocks_data_{slug}`. Add the handler to the existing `custom/app/WP/AcfBlocksData.php` class — **not** to `custom/functions.php` (see [CLAUDE.md "Architecture"](../../../CLAUDE.md#architecture-core-vs-custom)). Pattern follows the existing `case_studies()` and `team_members()` methods in that file:
 
    ```php
    // custom/app/WP/AcfBlocksData.php

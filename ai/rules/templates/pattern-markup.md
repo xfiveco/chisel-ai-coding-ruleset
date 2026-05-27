@@ -83,7 +83,7 @@ WordPress block grammar for common pattern building blocks. Copy and adapt. Alwa
 <!-- /wp:spacer -->
 ```
 
-Available `is-style-*` sizes come from `registerSpacerStyles()` in `src/scripts/editor/blocks-styles.js` — read it for the current list. The Figma px → style mapping is in [RULES.md "Spacing between blocks"](../RULES.md#spacing-between-blocks).
+Available `is-style-*` sizes come from `registerSpacerStyles()` in `src/scripts/editor/blocks-styles.js` — read it for the current list. The Figma px → style mapping is in [CLAUDE.md "Spacing between blocks"](../../../CLAUDE.md#spacing-between-blocks).
 
 ## Media
 

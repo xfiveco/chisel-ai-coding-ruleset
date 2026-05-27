@@ -1,10 +1,21 @@
 ---
+name: chisel-create-acf-options
 description: Register an ACF Options page or sub-page for global site settings (theme options, social links, footer content, header settings) accessible from any template via `get_field('name', 'option')`.
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - AskUserQuestion
+  - TodoWrite
+  - mcp__xfive-mcp-chisel__*
 ---
 
 # Create ACF Options Page
 
-**Load RULES.md first.** No paired reference doc — this skill is self-contained.
+No paired reference doc — this skill is self-contained.
 
 ## Procedure
 

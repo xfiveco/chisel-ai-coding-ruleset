@@ -1,16 +1,26 @@
 ---
+name: chisel-theme-json
 description: Modify theme.json to add/update design tokens — colors, typography, spacing, custom properties, block styles, layout settings.
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - AskUserQuestion
+  - TodoWrite
 ---
 
 # Modify theme.json
 
-**Load RULES.md first.** `theme.json` at the theme root is the single source of truth for design tokens. Changes here generate CSS custom properties automatically.
+`theme.json` at the theme root is the single source of truth for design tokens. Changes here generate CSS custom properties automatically.
 
 **Always read theme.json first** before making changes.
 
 ## Protected slugs
 
-Never rename: `primary`, `primary-300`, `foreground`, `background`, `white`, `black`, `grey-100/300/900`, `secondary`, `info`, `error`, `success`, `warning`, button styles (`is-style-primary` etc.), custom aliases (`margin.medium`, `gap.normal`, etc.). See [reference/design-tokens.md](../reference/design-tokens.md) for full list.
+Never rename: `primary`, `primary-300`, `foreground`, `background`, `white`, `black`, `grey-100/300/900`, `secondary`, `info`, `error`, `success`, `warning`, button styles (`is-style-primary` etc.), custom aliases (`margin.medium`, `gap.normal`, etc.). See [reference/design-tokens.md](../../rules/reference/design-tokens.md) for full list.
 
 ## Common modifications
 

@@ -17,7 +17,19 @@ Palette slugs (protected — never rename; change hex values only):
 
 Usage: `var(--wp--preset--color--{slug})` or SCSS `get-color('slug')`.
 
-## Typography
+## Mapping Figma tokens → theme.json (HARD RULE — match VALUES, never names)
+
+**A Figma token name is NOT its Chisel slug. Match by resolved value, not by matching alias names.** Figma's spacing/size names are arbitrary and differ per file — e.g. Figma `large` = 48px but Chisel `get-gap('large')` = 32px (slug `70`/2rem); Figma `base` = 24px. Mapping Figma `large` → Chisel `large` by name silently ships the wrong value.
+
+Procedure for **every** Figma-sourced value (spacing, gap, padding, font-size, radius, color, shadow, line-height):
+
+1. Call `get_variable_defs` on the node to get the **resolved value** (`48`, `#24c1b1`, `700`, …). This is the only ground truth.
+2. Read the current `theme.json` and find the slug whose **value matches** (48px → `gap`/`padding` alias that resolves to `3rem`, which is `xlarge` → spacing `80`). Use that slug's `get-*()` helper.
+3. If **no** slug matches the value, map to the nearest existing step (per "Design tokens" rule in CLAUDE.md), and only extend `theme.json` if Figma genuinely has a denser scale. **Do NOT rename existing slugs to mirror Figma** — palette + spacing aliases are protected (SCSS, helpers, and theme.json reference them by name; renaming breaks call sites).
+
+Do NOT trust: the Figma token's **name**, the rendered `get_design_context` CSS, or the `weight:`/`size:` fields inside a `Font(...)` style summary — each can disagree with the bound variable (e.g. a `nav item/font-weight` variable of `900` rendering as `weight: 700`). When a bound variable and the rendered value conflict, the design's visual intent wins — surface the conflict to the user rather than silently picking one.
+
+The current alias→value map drifts as the project adapts — **always re-read `theme.json` to confirm**, never assume a slug's value from memory or from this doc.
 
 - **body**: Roboto 300/700 — `var(--wp--preset--font-family--body)`
 - **headings**: Manrope 700/800 — `var(--wp--preset--font-family--headings)`

@@ -99,13 +99,13 @@ Default to a `core/spacer` between every two sibling inner blocks (even when Fig
 
 ### Picking the spacer style
 
-For each spacer, derive the slug from `theme.json` instead of hardcoding:
+For each spacer, derive the slug from `theme.json` instead of hardcoding. This is the "match VALUES, never names" rule above, applied to spacers — the Figma gap's **resolved px** drives the choice, never the Figma token's name:
 
-1. Read `settings.custom.gap` aliases from `theme.json` (each maps to a numeric `spacingSizes` slug, ultimately a rem value).
-2. Convert each alias's rem value to px (×16).
-3. Pick the alias whose px is closest to the Figma spacing. Use `"className": "is-style-{alias}"` on the spacer.
+1. Get the Figma spacing's **resolved value** via `get_variable_defs` (e.g. `48`), not the token name (Figma `large` may be 48px while Chisel `large` is 32px — see the HARD RULE above).
+2. Read `settings.custom.gap` aliases from `theme.json` (each maps to a numeric `spacingSizes` slug, ultimately a rem value) and convert each to px (×16).
+3. Pick the alias whose px **matches** the Figma px (closest if no exact). Use `"className": "is-style-{alias}"` on the spacer.
 
-If no alias is close enough, extend the scale in `theme.json` rather than picking a misfit.
+If no alias is close enough, extend the scale in `theme.json` rather than picking a misfit (and never rename an existing alias to match Figma).
 
 ### Margin sync at project start
 

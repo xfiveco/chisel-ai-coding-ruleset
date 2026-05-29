@@ -34,8 +34,8 @@ All templates extend `views/base.twig` (html, head, header, main, footer).
 | `logo`            | string (HTML) | `Components::get_logo()` — responsive custom logo                    |
 | `menus`           | array         | All registered nav menus                                             |
 | `sidebar`         | array         | Auto-detects blog/woo context                                        |
-| `copyright`       | array         | `chisel-sidebar-copyright`                                           |
-| `footer_sidebars` | array         | Footer columns + grid class                                          |
+| `copyright`       | array         | `chisel-sidebar-copyright` widget area (`copyright.content`)         |
+| `footer_sidebars` | array         | 4 footer-column widget areas + grid class (`.columns`)               |
 | `the_title`       | array         | Page/archive title + class                                           |
 | `options`         | array         | ACF Options (if added via custom filter in `custom/app/WP/Site.php`) |
 

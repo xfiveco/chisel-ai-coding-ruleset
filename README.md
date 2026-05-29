@@ -17,7 +17,7 @@ This README is for **humans maintaining the rules**. The agent itself reads [`CL
 
 1. New Chisel project arrives with `CLAUDE.md`, the [`ai/`](ai/) folder, and [`ai-new-session-prompt.md`](ai-new-session-prompt.md) at the theme root.
 2. Launch the agent from inside the theme directory (so the `chisel-*` skills auto-discover), then paste the contents of `ai-new-session-prompt.md` at the start of every new agent session and describe the task.
-3. The agent loads `CLAUDE.md`, then the matching reference + skill for the task, and works in pause-and-review phases.
+3. The agent loads `CLAUDE.md`, then the matching reference + skill for the task, and works in pause-and-review phases. Progress is tracked under an `ai-progress/` folder it creates at the theme root (an `INDEX.md` router → per-effort roadmap → per-phase files); on a new session it reads `ai-progress/INDEX.md` first to resume in-flight work.
 
 The `xfive-mcp` WordPress plugin must be installed and its MCP server registered in the agent client — content insertion goes through MCP tools, not PHP seeds / WP-CLI / manual paste.
 
@@ -27,6 +27,7 @@ The `xfive-mcp` WordPress plugin must be installed and its MCP server registered
 CLAUDE.md                          # Entry point — always loaded; carries load-bearing rules + routing index
 ai-new-session-prompt.md           # Paste-at-start prompt (phased workflow)
 README.md                          # This file
+ai-progress/                       # Agent-created at runtime (not shipped): INDEX + per-effort roadmap + per-phase files
 ai/
 ├── rules/
 │   ├── reference/                 # The "what" — descriptive facts
@@ -49,7 +50,7 @@ ai/
 │       └── block-mod-template.md
 └── skills/                        # The "how" — ordered procedures (auto-discovered slash commands)
     ├── chisel-figma-to-chisel/    #   Orchestrator for Figma imports
-    ├── chisel-plan/               #   Creates the progress file (PROGRESS.md / FIGMA_IMPORT_PROGRESS.md)
+    ├── chisel-plan/               #   Creates progress files under ai-progress/ (INDEX + per-effort roadmap + per-phase files)
     ├── chisel-setup-theme-json/
     ├── chisel-theme-json/
     ├── chisel-adapt-base-styles/

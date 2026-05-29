@@ -37,10 +37,18 @@ Headers and footers are Twig templates — NOT patterns or blocks. Edit directly
 | Logo                  | Customizer (`custom_logo`)   | `{{ logo }}`                         |
 | Nav links             | Appearance > Menus           | `{{ get_nav_menu('main_nav') }}`     |
 | CTA button (text/URL) | ACF Options > Theme Settings | `{{ options.header_cta_text }}` etc. |
-| Footer columns        | ACF Options (repeater)       | `{{ options.footer_link_groups }}`   |
+| Footer columns        | **Widget areas** (4 footer columns) — ACF Options only as fallback | `{{ footer_sidebars.columns }}` (loop) |
+| Copyright             | **Widget area** (`chisel-sidebar-copyright`) — ACF Options only as fallback | `{{ copyright.content }}`            |
 | Social links          | ACF Options (repeater)       | `{{ options.social_links }}`         |
-| Copyright             | ACF Options                  | `{{ options.copyright_text }}`       |
 | Newsletter            | Gravity Forms shortcode      | —                                    |
+
+### Footer columns + copyright: widgets first (load-bearing)
+
+The theme **already registers** four footer-column widget areas + one copyright widget area in [core/WP/Sidebars.php](../../../core/WP/Sidebars.php) (`chisel-sidebar-footer-1`…`footer-4`, `chisel-sidebar-copyright`), and `views/components/footer.twig` is already wired to render them via the `footer_sidebars` / `copyright` Timber context. **Use the widget areas — don't rebuild this with an ACF repeater and don't overwrite footer.twig's existing `footer_columns` / `footer_copyright` blocks.**
+
+- Populate via MCP: `xfive-widgets-widgets-list` to inspect, `xfive-widgets-widget-add` / `widget-update` / `widget-remove` to fill each area (`chisel-sidebar-footer-1`…`footer-4`, `chisel-sidebar-copyright`).
+- Need a different column count? Filter `chisel_sidebars` in `custom/app/WP/Sidebars.php` (a custom override class) — don't edit `core/`.
+- **ACF Options is the fallback**, only for footer content a widget genuinely can't express (e.g. a structured link-group repeater with per-link custom fields, a social-icon picker bound to the icon system). When you reach for it, say why widgets don't fit, and add it alongside the widget areas rather than replacing them.
 
 ## Procedure
 
@@ -51,9 +59,13 @@ Headers and footers are Twig templates — NOT patterns or blocks. Edit directly
 
 Extract in all modes: background, border, nav style, CTA button variant, icons, spacing.
 
-### 2. Set up ACF Options (if not done)
+### 2. Fill footer columns + copyright via widgets
 
-Use [create-acf-options](../chisel-create-acf-options/SKILL.md) to register "Theme Settings" page with tabs (Header, Footer, Social, etc.). Add `options` to Timber context:
+These are existing widget areas (see "Footer columns + copyright: widgets first" above). Inspect with `xfive-widgets-widgets-list`, then populate `chisel-sidebar-footer-1`…`footer-4` and `chisel-sidebar-copyright` via `xfive-widgets-widget-add` / `widget-update`. No Twig or ACF changes needed — footer.twig already renders them. Skip to step 3 unless a column needs content a widget can't express.
+
+### 3. Set up ACF Options (only for what widgets/menus/Customizer don't cover)
+
+For header CTA, social links, or footer content that genuinely can't be a widget — use [create-acf-options](../chisel-create-acf-options/SKILL.md) to register "Theme Settings" page with tabs (Header, Footer, Social, etc.). Add `options` to Timber context:
 
 ```php
 // custom/app/WP/Site.php
@@ -67,9 +79,9 @@ public function add_to_context( array $context ): array {
 
 Create the ACF field group JSON in `acf-json/group_{hash}.json`. Populate fields immediately via `xfive-acf-acf-field-update` with `post_id: "option"` — don't leave empty.
 
-### 3. Edit Twig template
+### 4. Edit Twig template
 
-Edit `views/components/header.twig` directly. Use ACF Options for content:
+Edit `views/components/header.twig` directly. Use ACF Options for content. (Footer columns + copyright are already wired to widgets in `footer.twig` — leave those blocks alone unless restructuring layout.)
 
 ```twig
 <header id="header" class="c-header o-wrapper">
@@ -87,15 +99,15 @@ Edit `views/components/header.twig` directly. Use ACF Options for content:
 </header>
 ```
 
-### 4. Update SCSS
+### 5. Update SCSS
 
 Edit `src/styles/components/_header.scss` (and `_main-nav.scss` as needed). Use `@use '~design' as *;` and design tool helpers.
 
-### 5. Create nav menu
+### 6. Create nav menu
 
 Use `xfive-menus-nav-menu-create` to create the menu and assign to location (`chisel_main_nav` or `chisel_footer_nav`). Warn: the tool may append items to an existing menu — check first.
 
-### 6. Upload and set logo
+### 7. Upload and set logo
 
 ```
 xfive-images-image-upload { image_url or local_path }
@@ -109,5 +121,7 @@ Hamburger color in `src/styles/components/main-nav-toggle/_mnt-settings.scss` (`
 ## What NOT to do
 
 - Do NOT hardcode phone numbers, emails, CTAs, social URLs, or copyright text in Twig.
+- Do NOT build footer columns or copyright as an ACF repeater by default — the theme already ships 4 footer-column widget areas + a copyright widget area, wired into `footer.twig`. Use them (`xfive-widgets-*`). ACF is the fallback only.
+- Do NOT overwrite footer.twig's `footer_columns` / `footer_copyright` blocks to swap widgets for ACF — you'd orphan the registered widget areas.
 - Do NOT build header/footer as a block pattern unless user explicitly wants block-based site editing.
 - `custom/views/` is legacy and unused for Twig — edit `views/` directly.

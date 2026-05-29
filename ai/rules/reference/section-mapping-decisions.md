@@ -51,7 +51,7 @@ When implementing a feature end-to-end, follow this order — it prevents costly
 
 ## Shared components rule
 
-Before creating anything new, check existing patterns/blocks for reuse. **Figma mode**: check the "Shared components" section of `FIGMA_IMPORT_PROGRESS.md`. **Other modes**: skim `patterns/` and `src/blocks*/` for matching slugs. If the current section matches an existing pattern/block, reuse it — don't create `hero-2` when `hero` exists.
+Before creating anything new, check existing patterns/blocks for reuse. **Figma mode**: check the "Shared / cross-phase" section of the effort's `ai-progress/{effort-slug}-ROADMAP.md`. **Other modes**: skim `patterns/` and `src/blocks*/` for matching slugs. If the current section matches an existing pattern/block, reuse it — don't create `hero-2` when `hero` exists.
 
 If the existing component needs a variation, prefer:
 
@@ -59,7 +59,7 @@ If the existing component needs a variation, prefer:
 2. Adding a pattern variant flag (not a new pattern)
 3. Creating a new pattern only if the structure genuinely differs
 
-If you reuse, record the current screen under the component's "used by" list (Figma mode: in `FIGMA_IMPORT_PROGRESS.md` Phase 7).
+If you reuse, record the current screen under the component's "used by" list (Figma mode: in the roadmap's "Shared / cross-phase" section).
 
 ## CPT decision
 

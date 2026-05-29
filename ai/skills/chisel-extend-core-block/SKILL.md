@@ -24,12 +24,12 @@ Three approaches, simplest first:
 
 ## Decision
 
-| Need                                | Approach                        | Effort |
-| ----------------------------------- | ------------------------------- | ------ |
-| Visual variant users pick           | Block style                     | Low    |
-| On/off toggle that adds a class     | Block mod                       | Medium |
-| New sidebar control (select, input) | Block mod                       | Medium |
-| Always-on default styling           | SCSS only                       | Lowest |
+| Need                                | Approach                                        | Effort |
+| ----------------------------------- | ----------------------------------------------- | ------ |
+| Visual variant users pick           | Block style                                     | Low    |
+| On/off toggle that adds a class     | Block mod                                       | Medium |
+| New sidebar control (select, input) | Block mod                                       | Medium |
+| Always-on default styling           | SCSS only                                       | Lowest |
 | Complex rendering changes           | [create-block](../chisel-create-block/SKILL.md) | High   |
 
 **Rule:** if the change should be the global default (not a variant), update the base style directly — see [adapt-base-styles](../chisel-adapt-base-styles/SKILL.md). Don't create a block style for something that should be the default.

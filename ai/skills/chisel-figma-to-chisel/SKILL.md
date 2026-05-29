@@ -25,15 +25,15 @@ This skill calls other skills — don't reinvent their work.
 
 ## Load-bearing rules for Figma mode
 
-- **`FIGMA_IMPORT_PROGRESS.md` is the source of truth across sessions.** Update it after every section (patterns, blocks, CPTs, phase checkboxes, session log line with absolute date). It survives `/compact` and new sessions; your in-context memory does not.
+- **The `ai-progress/` files are the source of truth across sessions.** Update the effort roadmap + the active phase file after every section (patterns, blocks, CPTs, phase checkboxes, session log line with absolute date). They survive `/compact` and new sessions; your in-context memory does not. Layout + procedure owned by the [chisel-plan skill](../chisel-plan/SKILL.md).
 - **Sections are processed top-to-bottom, one at a time, end-to-end.** End-to-end means: CPT (if needed) + block/pattern + SCSS + images + page wiring + progress file update — all for one section before moving to the next. No cross-section batching.
 - **Stop for user review after each section.** Don't chain sections silently.
 - **Don't batch `get_design_context`.** One section at a time — batching overflows context.
 
 ## Skill map
 
-| Need                           | Skill                                         |
-| ------------------------------ | --------------------------------------------- |
+| Need                           | Skill                                                         |
+| ------------------------------ | ------------------------------------------------------------- |
 | First-time token bootstrap     | [setup-theme-json](../chisel-setup-theme-json/SKILL.md)       |
 | Update theme.json              | [theme-json](../chisel-theme-json/SKILL.md)                   |
 | Adapt buttons/typography/links | [adapt-base-styles](../chisel-adapt-base-styles/SKILL.md)     |
@@ -52,9 +52,9 @@ This skill calls other skills — don't reinvent their work.
 
 If `theme.json` still has example palette (`#dd2424` primary, `#22dbdb` secondary), run `setup-theme-json` first.
 
-### Phase 0.5 — FIGMA_IMPORT_PROGRESS.md
+### Phase 0.5 — ai-progress/ roadmap
 
-Read `FIGMA_IMPORT_PROGRESS.md` in the theme root. If missing, create it using the [chisel-plan skill](../chisel-plan/SKILL.md) (Figma mode → filename `FIGMA_IMPORT_PROGRESS.md`).
+Read `ai-progress/INDEX.md`, then this import's `{effort-slug}-ROADMAP.md`, in the theme root. If missing, create them using the [chisel-plan skill](../chisel-plan/SKILL.md) (Figma mode → a per-import roadmap + `{effort-slug}/` phase folder, plus an INDEX row).
 
 ### Phase 1 — Scope
 
@@ -83,7 +83,7 @@ For each section from top to bottom:
 4. Build pattern via `create-pattern` (or appropriate skill)
 5. Upload section images via `xfive-images-image-upload`
 6. Push section to page via `xfive-posts-post-update-content` (full page markup; for partial updates fetch with `post-get-content`/`block-tree`, modify the markup string, write the whole thing back)
-7. Update FIGMA_IMPORT_PROGRESS.md with what was built
+7. Update the `ai-progress/` files with what was built (phase file checklist + roadmap row outcome)
 8. Verify in browser before moving to next section
 
 Header/footer: use `adapt-header-footer` skill, not patterns.
@@ -106,9 +106,9 @@ Run checklist in [reference/screen-build-order.md](../../rules/reference/screen-
 
 When refining: fresh screenshot → compare rendered → adjust tokens first, then pattern SCSS, then block code.
 
-### Phase 7 — Update FIGMA_IMPORT_PROGRESS.md
+### Phase 7 — Update ai-progress/
 
-Flip phase checkboxes, add patterns/blocks/CPTs, append session log line with absolute date.
+Flip the phase file's checkboxes + the roadmap row (status + one-line outcome), add patterns/blocks/CPTs to artifacts, append a session log line with absolute date, and refresh the INDEX row's state.
 
 ## Output report
 

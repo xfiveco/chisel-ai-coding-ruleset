@@ -8,11 +8,11 @@ You are a **senior WordPress developer** adapting the Chisel starter theme to a 
 
 The spec can come from different sources. Pick the mode that fits the task:
 
-- **Figma mode** — user provides a Figma URL. Use the `figma-to-chisel` orchestrator skill, which inspects the file, bootstraps `theme.json`, and walks sections top-to-bottom. Progress is tracked in `FIGMA_IMPORT_PROGRESS.md` at the theme root.
+- **Figma mode** — user provides a Figma URL. Use the `figma-to-chisel` orchestrator skill, which inspects the file, bootstraps `theme.json`, and walks sections top-to-bottom. Progress is tracked under `ai-progress/` at the theme root (a per-import roadmap + phase files).
 - **Static-asset mode** — user provides screenshots, PDFs, or written design notes (no live Figma). Skip the figma-specific skills; use [chisel-adapt-base-styles](ai/skills/chisel-adapt-base-styles/SKILL.md), [chisel-create-pattern](ai/skills/chisel-create-pattern/SKILL.md), etc. directly.
 - **Prompt mode** — user just describes features in chat ("add a contact CPT", "build a pricing pattern", "extend the button block"). Pick the matching skill from the table below. No orchestrator.
 
-In every mode, the same skills/reference files apply — Figma is only one possible input. **Always create a progress file via the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md) before starting work** (Figma mode → `FIGMA_IMPORT_PROGRESS.md`, all other modes → `PROGRESS.md`), unless the user explicitly says to skip it. Mode doesn't change this — even a prompt-mode "add one block" gets a one-phase progress file. The file is cheap; reconstructing context after `/compact` or a new session isn't.
+In every mode, the same skills/reference files apply — Figma is only one possible input. **Always create progress files via the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md) before starting work** (under `ai-progress/` — a roadmap + phase files for a multi-phase effort, or a single `task-{slug}.md` for one-off work), unless the user explicitly says to skip it. Mode doesn't change this — even a prompt-mode "add one block" gets a `task-` file. It's cheap; reconstructing context after `/compact` or a new session isn't.
 
 ## Identity
 
@@ -73,11 +73,11 @@ Entry points:
 
 ### Progress tracking
 
-**Always create a progress file at the theme root before starting work** (the directory containing `CLAUDE.md`, `functions.php`, `theme.json`), and commit it to the repo. The file is the source of truth — it survives `/compact`, new sessions, and dev handoffs. The only exception is when the user explicitly says to skip it.
+**Always create progress files before starting work**, under an `ai-progress/` folder at the theme root (the directory containing `CLAUDE.md`, `functions.php`, `theme.json`), and commit them to the repo. They are the source of truth — surviving `/compact`, new sessions, and dev handoffs. The only exception is when the user explicitly says to skip it.
 
-**Format + procedure are owned by the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md).** It produces `FIGMA_IMPORT_PROGRESS.md` for Figma imports and `PROGRESS.md` for everything else. Same shape, different `## Source` block and typical phase set. Read the skill before creating or updating any progress file.
+**Format + procedure are owned by the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md).** Layout: `ai-progress/INDEX.md` (router, read first) → one `{effort-slug}-ROADMAP.md` per multi-phase effort (Source + Scope + phase table + session log) → `{effort-slug}/phase-NN-{slug}.md` per expanded phase; standalone one-off work → `ai-progress/task-{slug}.md`. **One roadmap per effort/goal, never one monolithic file and never mixed modes.** Roadmap rows are status + one-line outcome + link only; the expanded plan lives in the phase file — so a new session reads the index + roadmap and opens only the phase it's resuming. Read the skill before creating or updating any progress file.
 
-**Per-phase plan-review gate (HARD RULE).** When starting a phase, first flip it to `[~]` and expand it in the progress file with the implementation detail (what you'll do, files/blocks/tokens touched, mapping decisions) — then **pause for the user to review that phase's plan before building.** The user may request changes; apply them to the plan before implementing, not after. Build only on explicit go-ahead. The post-build summary pause still applies. So each phase has two stops: plan-review (before) and summary (after).
+**Per-phase plan-review gate (HARD RULE).** When starting a phase, first flip its roadmap row to `[~]` and author the phase file (`{effort-slug}/phase-NN-{slug}.md`) with the implementation detail (what you'll do, files/blocks/tokens touched, mapping decisions) — then **pause for the user to review that phase's plan before building.** The user may request changes; apply them to the plan before implementing, not after. Build only on explicit go-ahead. The post-build summary pause still applies. So each phase has two stops: plan-review (before) and summary (after).
 
 ### Reuse before building (HARD RULE)
 

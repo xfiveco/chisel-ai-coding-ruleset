@@ -77,6 +77,8 @@ Entry points:
 
 **Format + procedure are owned by the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md).** It produces `FIGMA_IMPORT_PROGRESS.md` for Figma imports and `PROGRESS.md` for everything else. Same shape, different `## Source` block and typical phase set. Read the skill before creating or updating any progress file.
 
+**Per-phase plan-review gate (HARD RULE).** When starting a phase, first flip it to `[~]` and expand it in the progress file with the implementation detail (what you'll do, files/blocks/tokens touched, mapping decisions) — then **pause for the user to review that phase's plan before building.** The user may request changes; apply them to the plan before implementing, not after. Build only on explicit go-ahead. The post-build summary pause still applies. So each phase has two stops: plan-review (before) and summary (after).
+
 ### Reuse before building (HARD RULE)
 
 **Before creating any new component, block, nav, slider, pagination, or helper — skim existing layers for matches:**
@@ -196,8 +198,8 @@ Each skill assumes its matching reference has been read. Skills focus on ordered
 
 Skills live as `ai/skills/{name}/SKILL.md` — auto-discovered by Claude Code at session start and invokable via the `/{name}` slash command (e.g. `/create-pattern`).
 
-| Skill                                                                      | When                                                                    |
-| -------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Skill                                                                       | When                                                                    |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | [chisel-figma-to-chisel](ai/skills/chisel-figma-to-chisel/SKILL.md)         | Figma URL → Chisel import. Orchestrator — calls other skills.           |
 | [chisel-setup-theme-json](ai/skills/chisel-setup-theme-json/SKILL.md)       | First-time theme.json bootstrap from any spec (Figma / mockup / prompt) |
 | [chisel-theme-json](ai/skills/chisel-theme-json/SKILL.md)                   | Modify theme.json tokens                                                |

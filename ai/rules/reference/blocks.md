@@ -90,9 +90,11 @@ Registered in `src/scripts/editor/blocks-styles.js` — **read that file for the
 
 ## Existing block mods
 
-In `src/scripts/editor/mods/`:
+In `src/scripts/editor/mods/` (registered via `blocks-mods.js`). Several add custom attributes or force values — **when seeding, set the attr AND its companion class together**, or the editor desyncs / the style doesn't render:
 
-- **core.js**: `disableBottomMargin` toggle on all core/chisel blocks (adds `u-no-margin-bottom` class)
-- **blocks-alignment.js**: default alignment per block
-- **core-button.js**: button modifications
-- **core-spacer.js**: spacer modifications
+- **core.js**: adds a `disableBottomMargin` attr (toggle) to every `core/*` + `chisel/*` block. **The attr alone renders nothing** — the bottom-margin removal is done by the `u-no-margin-bottom` utility class. When seeding, set BOTH `"disableBottomMargin":true` AND `"className":"… u-no-margin-bottom"` (and include `u-no-margin-bottom` in the rendered class list). Needed on any block immediately followed by a spacer or the last child of a container (else base margin + spacer = double gap).
+- **core-button.js**: adds `buttonSize`, `buttonIcon`, `buttonIconPosition` attrs to `core/button`, kept in sync with classes `is-size-{size}`, `has-icon has-icon-{name}`, `has-icon-left`. **When seeding a button icon/size, set the attr AND the class:** e.g. `{"buttonIcon":"arrow-right","className":"… has-icon has-icon-arrow-right"}`. Class-only works visually but the editor control shows empty and a later edit can wipe it. Icon `{name}` must be in `$static-icons`.
+- **blocks-alignment.js**: on select, force-sets a default `align` per block from the PHP-provided `chiselEditorScripts.blocksDefaultAlignment` map. A seeded `align` on those blocks may be overwritten when the user selects the block — check the map (or just rely on it) rather than fighting it.
+- **core-spacer.js**: forces every `core/spacer` to `height:"auto"` in the editor — spacer size comes ONLY from the `is-style-{size}` padding, never the `height` attr. Always seed `{"height":"auto","className":"is-style-{size}"}`. See [design-tokens.md "Picking the spacer style"](design-tokens.md#picking-the-spacer-style).
+
+Editor-only UI helpers (not seed-affecting): `components/BlockEditSelector.js` (an "Edit {block}" button), `components/RenderAppender.js` (custom InnerBlocks inserter), `blocks.js` (adds `e-block-sidebar--{block}` class to the inspector), `utils.js` (icon choices for the button mod).

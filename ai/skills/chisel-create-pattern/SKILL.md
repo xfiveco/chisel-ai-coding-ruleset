@@ -38,7 +38,7 @@ Hero sections, CTAs, feature grids, pricing tables, testimonial rows, FAQ lists,
 
    Skipping this audit causes silent conflicts: base margins stack with spacers, base button styles override Figma variant, base group padding fights pattern layout, etc.
 
-3. **Create pattern PHP** at `patterns/{slug}.php` — see [templates/pattern-markup.md](../../rules/templates/pattern-markup.md) for block grammar examples.
+3. **Create pattern PHP** at `patterns/{slug}.php`. **Copy block grammar from [templates/pattern-markup.md](../../rules/templates/pattern-markup.md) — don't hand-write markup from the block schema alone.** The template encodes editor-mod pairings the schema doesn't reveal (see [reference/blocks.md "Existing block mods"](../../rules/reference/blocks.md#existing-block-mods)): spacers seed `{"height":"auto","className":"is-style-{size}"}` (size never via the `height` attr); button icons seed BOTH `"buttonIcon":"{name}"` and `class="… has-icon has-icon-{name}"`; bottom-margin suppression seeds BOTH `"disableBottomMargin":true` and `class="… u-no-margin-bottom"`. Seeding the attr without its class (or vice-versa) renders wrong or desyncs the editor.
 4. **Root wrapper rule**: single `core/group` (or `core/cover`) with class `p-{slug}`. Required for scoped SCSS.
 5. **Create pattern SCSS** at `src/styles/components/_p-{slug}.scss`, scoped under `.p-{slug}`. Only include properties that are section-specific; global divergences should already be fixed in step 2.
 6. **SCSS index is auto-generated** — do NOT edit `src/styles/components/_index.scss` by hand. The build picks up new `_p-{slug}.scss` files automatically.
@@ -86,7 +86,7 @@ See [CLAUDE.md "Spacing between blocks"](../../../CLAUDE.md#spacing-between-bloc
 ## Guidelines
 
 1. Prefix pattern slug with nothing (`home-hero`), but class is `p-home-hero`.
-2. Use theme.json preset classes: `has-primary-color`, `has-large-font-size`, `is-style-primary`.
+2. **Set block-supported properties ON THE BLOCK via presets, not in pattern SCSS.** If a block's `supports` exposes a property (color background/text, font-size, font-family, alignment, block gap, border) and theme.json has a matching preset, set it as a block attribute + preset class — `{"backgroundColor":"primary"}` → `class="… has-primary-background-color has-background"`, `{"textColor":"secondary"}` → `has-secondary-color has-text-color`, `{"fontSize":"extra-large"}` → `has-extra-large-font-size`, `is-style-primary`. Editors then see/change it in the block UI and it stays token-backed. **Reserve pattern SCSS for what the block can't express:** section padding/structure, custom layout widths, line-height overrides with no preset, multi-element relationships, responsive tweaks. Check the block's `supports` (via `xfive-blocks-block-schema`) before styling a color/size/gap in SCSS — if the block supports it and a preset exists, it belongs on the block. Never set a raw hex/px on the block (only preset slugs); if no preset exists, that value goes in tokenized SCSS, not as an inline block style.
 3. Use realistic copy, not lorem ipsum.
 4. Flag unknowns — don't fabricate content.
 5. If a pattern needs interactivity → stop and use [create-block](../chisel-create-block/SKILL.md) instead.

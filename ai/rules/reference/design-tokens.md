@@ -102,10 +102,12 @@ Default to a `core/spacer` between every two sibling inner blocks (even when Fig
 For each spacer, derive the slug from `theme.json` instead of hardcoding. This is the "match VALUES, never names" rule above, applied to spacers — the Figma gap's **resolved px** drives the choice, never the Figma token's name:
 
 1. Get the Figma spacing's **resolved value** via `get_variable_defs` (e.g. `48`), not the token name (Figma `large` may be 48px while Chisel `large` is 32px — see the HARD RULE above).
-2. Read `settings.custom.gap` aliases from `theme.json` (each maps to a numeric `spacingSizes` slug, ultimately a rem value) and convert each to px (×16).
-3. Pick the alias whose px **matches** the Figma px (closest if no exact). Use `"className": "is-style-{alias}"` on the spacer.
+2. Read the **rendered height of each spacer style** from `src/styles/blocks/_core-spacer.scss` — each `is-style-{alias}` sets `padding: get-margin('{alias}') 0`, so the spacer's rendered height = **2× that margin token** (e.g. `small` margin 12px → 24px tall; `medium` 24px → 48px; `large` 32px → 64px). The base `.wp-block-spacer` (no style class) is `padding: get-margin('normal') 0` → 48px.
+3. Pick the `is-style-{alias}` whose **rendered height** matches the Figma px (closest if no exact). Seed `"className": "is-style-{alias}"`.
 
-If no alias is close enough, extend the scale in `theme.json` rather than picking a misfit (and never rename an existing alias to match Figma).
+**The `height` attribute is IGNORED — always seed `height:"auto"`.** `src/scripts/editor/mods/core-spacer.js` runs an `editor.BlockEdit` filter that force-sets every `core/spacer` to `height: "auto"` on load. So an inline `height:"32px"` is silently overwritten and the rendered size comes **only** from the `is-style-*` padding. Seeding a px height is dead markup that misleads — write `{"height":"auto","className":"is-style-{alias}"}` with `style="height:auto"` (matches [templates/pattern-markup.md](../templates/pattern-markup.md)).
+
+If no alias's rendered height is close enough, extend the scale in `theme.json` (add a margin alias + matching spacer `is-style` in `_core-spacer.scss` + `registerSpacerStyles()`) rather than picking a misfit — never rename an existing alias to match Figma, and never rely on the `height` attr.
 
 ### Margin sync at project start
 

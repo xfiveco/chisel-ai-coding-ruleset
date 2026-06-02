@@ -79,7 +79,7 @@ Every pattern has a single root `core/group` (or `core/cover`) with class `p-{sl
 1. **Scoped styling** — custom class isolates pattern's inner blocks from same blocks elsewhere
 2. **Structural integrity** — single root keeps pattern as one selectable unit in editor
 
-Pattern SCSS: `src/styles/components/_p-{slug}.scss`, scoped under `.p-{slug}`.
+Pattern SCSS: `src/styles/patterns/_{slug}.scss`, scoped under `.p-{slug}` (file unprefixed, CSS class keeps `p-`).
 
 ## Existing block styles
 

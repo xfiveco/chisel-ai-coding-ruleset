@@ -40,13 +40,14 @@ Hero sections, CTAs, feature grids, pricing tables, testimonial rows, FAQ lists,
 
 3. **Create pattern PHP** at `patterns/{slug}.php`. **Copy block grammar from [templates/pattern-markup.md](../../rules/templates/pattern-markup.md) — don't hand-write markup from the block schema alone.** The template encodes editor-mod pairings the schema doesn't reveal (see [reference/blocks.md "Existing block mods"](../../rules/reference/blocks.md#existing-block-mods)): spacers seed `{"height":"auto","className":"is-style-{size}"}` (size never via the `height` attr); button icons seed BOTH `"buttonIcon":"{name}"` and `class="… has-icon has-icon-{name}"`; bottom-margin suppression seeds BOTH `"disableBottomMargin":true` and `class="… u-no-margin-bottom"`. Seeding the attr without its class (or vice-versa) renders wrong or desyncs the editor.
 4. **Root wrapper rule**: single `core/group` (or `core/cover`) with class `p-{slug}`. Required for scoped SCSS.
-5. **Create pattern SCSS** at `src/styles/components/_p-{slug}.scss`, scoped under `.p-{slug}`. Only include properties that are section-specific; global divergences should already be fixed in step 2.
-6. **SCSS index is auto-generated** — do NOT edit `src/styles/components/_index.scss` by hand. The build picks up new `_p-{slug}.scss` files automatically.
-7. **Upload images** via `xfive-images-image-upload` (capture IDs).
-8. **Push to page** via MCP (see [reference/mcp-workflow.md](../../rules/reference/mcp-workflow.md)):
+5. **Create pattern SCSS** at `src/styles/patterns/_{slug}.scss`, scoped under `.p-{slug}`. Note: the **file** is unprefixed (`_{slug}.scss`), but the root-wrapper **CSS class** keeps the `p-` prefix (`.p-{slug}`). Only include properties that are section-specific; global divergences should already be fixed in step 2.
+6. **SCSS index is auto-generated** — do NOT edit `src/styles/patterns/_index.scss` by hand. The build picks up new `_{slug}.scss` files automatically.
+7. **Ensure `patterns` is imported** — on a fresh project the `patterns/` layer may not be wired up yet. Verify `@use 'patterns';` exists in **both** `src/styles/main.scss` and `src/styles/editor.scss`, added **after** `@use 'components';`. Add it if missing (this is a one-time per-project step).
+8. **Upload images** via `xfive-images-image-upload` (capture IDs).
+9. **Push to page** via MCP (see [reference/mcp-workflow.md](../../rules/reference/mcp-workflow.md)):
    - `xfive-blocks-block-schema` on every block type used
    - `xfive-posts-post-update-content` with the full serialized Gutenberg markup of the page (read current via `post-get-content`/`block-tree` first if you need to edit only one section).
-9. **Verify** with `xfive-posts-post-get-content` or `block-tree`, then visually in browser.
+10. **Verify** with `xfive-posts-post-get-content` or `block-tree`, then visually in browser.
 
 ## Pattern PHP template
 

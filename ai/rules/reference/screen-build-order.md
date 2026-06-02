@@ -27,7 +27,7 @@ Before declaring a screen done:
 - [ ] Every `has-*-color` / `has-*-background-color` class in patterns refers to an existing palette slug
 - [ ] Every `has-*-font-size` refers to an existing fontSize slug
 - [ ] Patterns have a root wrapper with `p-{slug}` class
-- [ ] Pattern SCSS file `src/styles/components/_p-{slug}.scss` exists and is scoped under `.p-{slug}` (the build auto-regenerates `_index.scss` to forward it)
+- [ ] Pattern SCSS file `src/styles/patterns/_{slug}.scss` exists and is scoped under `.p-{slug}` (the build auto-regenerates `_index.scss` to forward it)
 - [ ] Custom blocks compile and appear in "Chisel Blocks" inserter category
 - [ ] CPTs show up in admin menu with correct icon
 - [ ] Rendered page matches the spec at primary viewport

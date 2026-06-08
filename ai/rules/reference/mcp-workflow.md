@@ -45,8 +45,9 @@ Any Gutenberg content insertion goes through MCP:
 3. **Validate block attributes** before writing markup: `block-schema` on each block type. Catches typos/wrong types. Wrong attributes are silently ignored.
 4. **Upload images** via `image-upload` as part of each section build (not deferred). Capture attachment IDs/URLs. If URL returns wrong content-type (e.g. Figma asset URLs), download locally to a temp folder outside the theme (e.g. system temp, or a project-level `_tmp/` directory) then upload via `local_path`.
 5. **Generate block markup** as serialized WordPress block grammar. Use preset classes (`has-primary-color`, `is-style-primary`, `has-large-font-size`).
-6. **Write content**: ALWAYS via `post-update-content` with the full serialized markup. For partial edits, fetch current with `post-get-content` or `block-tree`, modify the markup string, write the whole thing back. (No partial-block tools — they were removed because index-based mutation was fragile.)
-7. **Verify**: `post-get-content` or `block-tree`, then user reloads in browser.
+6. **Write content**: ALWAYS via `post-update-content` with `mode:"replace"` and the **full serialized markup of the entire post**. To add a section, fetch current with `post-get-content`, concatenate the new section onto the full existing markup, write the whole thing back. (No partial-block tools — they were removed because index-based mutation was fragile.)
+   - **⚠️ NEVER use `mode:"append"` (or rely on it appending).** On this project's `xfive-mcp` plugin it **REPLACES the whole post** — using it to add one section silently wipes every prior section. Confirmed twice. Always do get → concat-onto-full → `mode:"replace"`.
+7. **Verify**: after every write, run `block-tree` and **count ALL top-level sections** against what should be there. A `block-tree` taken after a destructive write returns only the surviving block(s) — which falsely reads as a clean parse. Then user reloads in browser.
 
 ## Post creation defaults
 

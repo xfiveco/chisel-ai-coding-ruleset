@@ -33,7 +33,7 @@ Any Gutenberg content insertion goes through MCP:
 | -------------------- | ------------------------------------------------------------------------------------------------------ |
 | Posts                | `post-by-title`, `post-get-content`, `post-create`, `post-update`, `post-update-content`, `post-trash` |
 | Blocks               | `block-tree` (read), `block-schema` (read)                                                             |
-| Media                | `image-upload`                                                                                         |
+| Media                | `media-upload`, `media-migrate`                                                                        |
 | Menus                | `nav-menu-create`                                                                                      |
 | ACF                  | `acf-field-update`                                                                                     |
 | Options & theme mods | `options-update`                                                                                       |
@@ -43,7 +43,7 @@ Any Gutenberg content insertion goes through MCP:
 1. **Find or create the post**: `post-by-title` to look up, `post-create` to make new.
 2. **Check existing structure** (if editing): `post-get-content` or `block-tree`.
 3. **Validate block attributes** before writing markup: `block-schema` on each block type. Catches typos/wrong types. Wrong attributes are silently ignored.
-4. **Upload images** via `image-upload` as part of each section build (not deferred). Capture attachment IDs/URLs. If URL returns wrong content-type (e.g. Figma asset URLs), download locally to a temp folder outside the theme (e.g. system temp, or a project-level `_tmp/` directory) then upload via `local_path`.
+4. **Upload images** via `media-upload` as part of each section build (not deferred). Capture attachment IDs/URLs. If URL returns wrong content-type (e.g. Figma asset URLs), download locally to a temp folder outside the theme (e.g. system temp, or a project-level `_tmp/` directory) then upload via `local_path`.
 5. **Generate block markup** as serialized WordPress block grammar. Use preset classes (`has-primary-color`, `is-style-primary`, `has-large-font-size`).
 6. **Write content**: ALWAYS via `post-update-content` with `mode:"replace"` and the **full serialized markup of the entire post**. To add a section, fetch current with `post-get-content`, concatenate the new section onto the full existing markup, write the whole thing back. (No partial-block tools — they were removed because index-based mutation was fragile.)
    - **⚠️ NEVER use `mode:"append"` (or rely on it appending).** On this project's `xfive-mcp` plugin it **REPLACES the whole post** — using it to add one section silently wipes every prior section. Confirmed twice. Always do get → concat-onto-full → `mode:"replace"`.
@@ -82,7 +82,7 @@ xfive-options-options-update {
 
 Common use cases:
 
-- **Site logo**: upload via `image-upload` → set `custom_logo` theme mod to attachment ID
+- **Site logo**: upload via `media-upload` → set `custom_logo` theme mod to attachment ID
 - **Front page**: `type: "option"`, `entries: { "show_on_front": "page", "page_on_front": {id} }`
 - **Nav menu locations**: `type: "theme_mod"`, `entries: { "nav_menu_locations": { "chisel_main_nav": 3 } }`
 

@@ -32,15 +32,15 @@ Headers and footers are Twig templates — NOT patterns or blocks. Edit directly
 
 **No hardcoded editable content in Twig.** Map each header/footer element to a source:
 
-| Element               | Source                       | Twig access                          |
-| --------------------- | ---------------------------- | ------------------------------------ |
-| Logo                  | Customizer (`custom_logo`)   | `{{ logo }}`                         |
-| Nav links             | Appearance > Menus           | `{{ get_nav_menu('main_nav') }}`     |
-| CTA button (text/URL) | ACF Options > Theme Settings | `{{ options.header_cta_text }}` etc. |
-| Footer columns        | **Widget areas** (4 footer columns) — ACF Options only as fallback | `{{ footer_sidebars.columns }}` (loop) |
-| Copyright             | **Widget area** (`chisel-sidebar-copyright`) — ACF Options only as fallback | `{{ copyright.content }}`            |
-| Social links          | ACF Options (repeater)       | `{{ options.social_links }}`         |
-| Newsletter            | Gravity Forms shortcode      | —                                    |
+| Element               | Source                                                                      | Twig access                            |
+| --------------------- | --------------------------------------------------------------------------- | -------------------------------------- |
+| Logo                  | Customizer (`custom_logo`)                                                  | `{{ logo }}`                           |
+| Nav links             | Appearance > Menus                                                          | `{{ get_nav_menu('main_nav') }}`       |
+| CTA button (text/URL) | ACF Options > Theme Settings                                                | `{{ options.header_cta_text }}` etc.   |
+| Footer columns        | **Widget areas** (4 footer columns) — ACF Options only as fallback          | `{{ footer_sidebars.columns }}` (loop) |
+| Copyright             | **Widget area** (`chisel-sidebar-copyright`) — ACF Options only as fallback | `{{ copyright.content }}`              |
+| Social links          | ACF Options (repeater)                                                      | `{{ options.social_links }}`           |
+| Newsletter            | Gravity Forms shortcode                                                     | —                                      |
 
 ### Footer columns + copyright: widgets first (load-bearing)
 
@@ -110,7 +110,7 @@ Use `xfive-menus-nav-menu-create` to create the menu and assign to location (`ch
 ### 7. Upload and set logo
 
 ```
-xfive-images-image-upload { image_url or local_path }
+xfive-media-media-upload { file_url or local_path }
 xfive-options-options-update { type: "theme_mod", entries: { "custom_logo": <id> } }
 ```
 

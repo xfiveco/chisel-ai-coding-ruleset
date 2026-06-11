@@ -208,7 +208,7 @@ Full hero section with overlay color, top/bottom spacers, centered headline, lea
 
 ### Media + text (image on the left or right)
 
-Use `core/media-text` for image-beside-content sections (feature rows). Image left is default; add `"mediaPosition":"right"` to flip. `mediaId` is the attachment ID returned by `xfive-images-image-upload`.
+Use `core/media-text` for image-beside-content sections (feature rows). Image left is default; add `"mediaPosition":"right"` to flip. `mediaId` is the attachment ID returned by `xfive-media-media-upload`.
 
 **Image left:**
 

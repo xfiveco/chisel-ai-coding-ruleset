@@ -139,13 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ```json
 {
-  "key": "group_{unique_hash}",
+  "key": "group_{hex_hash}",
   "title": "{Block Title} Fields",
   "fields": [
     {
-      "key": "field_{unique_hash}",
+      "key": "field_{hex_hash}",
       "label": "{Field Label}",
-      "name": "{field_name}",
+      "name": "{prefix}_{field_name}",
       "type": "{text|image|repeater|select|etc}",
       "required": 0
     }
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 ```
 
-Generate unique hex strings for hashes.
+**Naming is a HARD RULE** — `key` = hex hash, filename = group key, `name` = block-initial prefix (WPML), `label` stays human. Full spec, derivation cases, and example: [reference/blocks.md "ACF field group naming"](../../rules/reference/blocks.md#acf-block-srcblocks-acfname).
 
 Common field types: `text`, `textarea`, `wysiwyg`, `image` (return: `id`), `repeater` with `sub_fields`, `select`, `radio`, `true_false`, `link`, `group` with `sub_fields`.
 

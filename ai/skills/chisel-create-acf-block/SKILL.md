@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 ```
 
-**Naming is a HARD RULE** — `key` = hex hash, filename = group key, `name` = block-initial prefix (WPML), `label` stays human. Full spec, derivation cases, and example: [reference/blocks.md "ACF field group naming"](../../rules/reference/blocks.md#acf-block-srcblocks-acfname).
+**Naming is a HARD RULE** — `key` = hex hash, filename = group key, `name` = block-initial prefix (WPML), `label` stays human. Full spec, derivation cases, and example: [reference/acf-naming.md](../../rules/reference/acf-naming.md).
 
 Common field types: `text`, `textarea`, `wysiwyg`, `image` (return: `id`), `repeater` with `sub_fields`, `select`, `radio`, `true_false`, `link`, `group` with `sub_fields`.
 

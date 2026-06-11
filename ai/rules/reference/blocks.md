@@ -40,26 +40,7 @@ acf-json/*.json         # ACF field group
 
 See [skills/create-acf-block.md](../skills/create-acf-block.md) for the full procedure and required block.json keys — always load it before scaffolding a new ACF block. For custom WP blocks see [skills/create-block.md](../skills/create-block.md).
 
-**ACF field group naming (HARD RULE — applies to every field group JSON you author).** Two independent properties, two independent rules:
-
-- **`key` (group + every field) = a real ACF-style hex hash.** `group_` / `field_` followed by 13 hex chars (e.g. `field_6a1f3d2c9e740`), generated fresh per field. NEVER human-readable keys (`group_contact_fields`, `field_heading`). The key is the field group's sync identity — ACF's UI writes edits back to a file named after the group key (`group_{hash}.json`), so the **filename must equal the group key**. Human-named keys/files break the import → edit-in-UI → save-back round-trip: the group imports but UI saves don't write back to disk, and column/wrapper settings silently fail to populate.
-- **`name` (the field slug) = block-initial prefix.** Prefix every field name with the block's initials so names are globally unique across the project — WPML registers translatable strings by field `name`, and duplicate names bleed strings across blocks. Derivation:
-  - Multi-word block: initials of the hyphen-separated words — `blueprint-process` → `bp`, `our-work` → `ow`.
-  - Single-word block: first 2 letters — `slider` → `sl`, `crisis` → `cr`.
-  - Collision: the first block to claim a prefix keeps it; a later block colliding appends the next letter of its first word until unique — `blog-posts` after `blueprint-process` → `blp`.
-  - Sub-fields use the **full repeater name** as their base: repeater `bp_steps` → `bp_steps_label`, `bp_steps_title`, `bp_steps_description`.
-- **`label` stays human-readable** (`Heading`, `Step label`) — only `name` is prefixed; editors see the label.
-
-Example — one field, all three properties distinct (block `blueprint-process` → prefix `bp`):
-
-```json
-{
-  "key": "field_7b3c4e1a9f852",   // hex hash, globally unique
-  "label": "Heading",             // human-readable, shown to editors
-  "name": "bp_heading",           // block-initial prefix, WPML-safe
-  "type": "text"
-}
-```
+**ACF field group naming (HARD RULE).** Keys must be hex hashes, filename = group key, field `name`s must be namespace-prefixed (block initials → `bp_heading`), `label`s stay human. Full spec, prefix-derivation cases, per-context prefix sources, and example: **[acf-naming.md](acf-naming.md)** — the canonical, all-context rule. Read it before authoring any field group JSON.
 
 **ACF field data shape (load-bearing — applies any time you seed an ACF block).** Markup is `wp:chisel/{name}`, NOT `wp:acf/{name}` — Chisel uses `register_block_type()`. Every `data` field needs a `_{name}: "field_key"` partner. ACF resolves values via these key-pointers; without them `get_fields()` returns empty. Repeaters need `items: N`, `_items: "field_B"` plus every sub-field per row with its key (field names below use the prefix rule above):
 

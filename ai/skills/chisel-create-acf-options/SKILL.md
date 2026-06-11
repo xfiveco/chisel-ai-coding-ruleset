@@ -76,17 +76,19 @@ Access in Twig: `{{ options.field_name }}`.
 
 ## 3. ACF field group JSON
 
-Create `acf-json/group_{unique-hash}.json`:
+**Naming is a HARD RULE** ([reference/acf-naming.md](../../rules/reference/acf-naming.md)): `key` (group + every field) = real ACF-style hex hash; **filename = group key** (`group_{hash}.json`) — human-readable keys break ACF's edit-in-UI → save-back sync. Field `name`s = page/section-slug prefix for WPML uniqueness (`header_cta_text`, `footer_logo`, `social_links`); sub-fields use the full parent name (`social_links_url`). `label` stays human.
+
+Create `acf-json/group_{hash}.json`:
 
 ```json
 {
-  "key": "group_{unique_hash}",
+  "key": "group_{hex_hash}",
   "title": "{Page Title} Fields",
   "fields": [
     {
-      "key": "field_{unique_hash}",
+      "key": "field_{hex_hash}",
       "label": "{Field Label}",
-      "name": "{field_name}",
+      "name": "{slug}_{field_name}",
       "type": "{text|image|repeater|select|etc}",
       "required": 0
     }

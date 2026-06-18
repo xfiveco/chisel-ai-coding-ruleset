@@ -95,3 +95,16 @@ Common use cases:
 ## Nav menus
 
 `nav-menu-create` may append items to an existing menu with the same name. Check first if the menu already exists to avoid duplicates.
+
+## Silent-failure traps (block seeding)
+
+These cause "Block validation failed" or wrong markup the agent won't catch on its own. CLAUDE.md carries the headlines; the full explanation of each lives here — read this before hand-writing any block markup.
+
+- **Schema before every block, every time.** Call `xfive-blocks-block-schema` for each block type before writing its markup. Chisel ACF blocks use `chisel/{name}`, NOT `acf/{name}`. A failed call = block missing / build not run / wrong slug — stop, don't guess. Wrong attrs are silently ignored.
+- **Static vs dynamic seed shape (check `renderMode` in the schema response).** Static (`renderMode: "static"`, client `save()` returns JSX) MUST be paired tags with rendered inner HTML: `<!-- wp:name {attrs} -->INNER<!-- /wp:name -->`. Dynamic (`renderMode: "dynamic"`, server `render_callback`, including ACF blocks) may self-close: `<!-- wp:name {attrs} /-->`. Self-closing a static block stores empty inner HTML; the editor re-runs `save()`, sees a diff, shows "Block validation failed".
+- **`seedAs` is necessary but not sufficient.** When attributes change `save()` output (image `width`/`height`/`sizeSlug`, button URL/className, heading `level`, group `tagName`/`layout`, etc.) → always paired tags with fully-rendered inner HTML, even if schema says self-closing is OK. When in doubt, use paired tags.
+- **`useBlockProps.save({className})` auto-prefixes `wp-block-{namespace}-{name}`** onto the wrapper element. Read the block's `save.js` and include the auto-prefix in hand-written seed markup.
+- **No whitespace inside containers wrapping `<InnerBlocks.Content />`.** Pretty-printing seeded HTML triggers "Block validation failed". Inline the inner-block comments tightly: `<div class="b-foo__content"><!-- wp:paragraph --><p>...</p><!-- /wp:paragraph --></div>`.
+- **`core/group` with both `backgroundColor` AND `textColor` requires `has-background`** on the rendered `<div>` — in addition to `has-background-color has-{slug}-background-color has-text-color`. Missing it = "Block validation failed" on save. Full saved class list: `has-background-color has-{slug}-background-color has-text-color has-background`. (When only one of the two is set, omit `has-background`.)
+- **When unsure: round-trip.** Insert one instance in the editor manually, save, `xfive-posts-post-get-content`, copy that exact markup. The block's own `save()` is ground truth.
+- Pages created with `post_status: "publish"` (not draft) for immediate preview. New ACF block → pause, user builds, schema-check passes, then seed (schema fails until `npm run build-scripts` runs).

@@ -82,7 +82,7 @@ Breakpoints: `@include bp('large') { ... }`, `@include bp-down('medium') { ... }
 
 ## Spacing between children
 
-See [CLAUDE.md "Spacing between blocks"](../../../CLAUDE.md#spacing-between-blocks) — load-bearing rules (spacer over `blockGap`, the px→style mapping, flex+spacer double-gap trap, `disableBottomMargin` placement) all live there. Available `is-style-*` spacer sizes come from `registerSpacerStyles()` in `src/scripts/editor/blocks-styles.js`.
+Composition rule (spacer over `blockGap`, walk-the-markup, `disableBottomMargin` pairing) → [reference/blocks.md "Spacing between sibling blocks"](../../rules/reference/blocks.md#spacing-between-sibling-blocks). Spacer-size px→style mapping + flex double-gap trap → [reference/design-tokens.md "Spacing between blocks"](../../rules/reference/design-tokens.md#spacing-between-blocks). Available `is-style-*` spacer sizes come from `registerSpacerStyles()` in `src/scripts/editor/blocks-styles.js`.
 
 ## Guidelines
 
@@ -91,6 +91,6 @@ See [CLAUDE.md "Spacing between blocks"](../../../CLAUDE.md#spacing-between-bloc
 3. Use realistic copy, not lorem ipsum.
 4. Flag unknowns — don't fabricate content.
 5. If a pattern needs interactivity → stop and use [create-block](../chisel-create-block/SKILL.md) instead.
-6. **Tokenize before hardcoding.** Pattern SCSS uses `get-color`, `get-padding`, `get-gap`, `get-font-size`, `get-layout`, etc. — never raw hex or `px-rem(N)` for any value that recurs. New container width? Add `settings.custom.layout.{name}` in theme.json + use `get-layout('{name}')`. See [CLAUDE.md "SCSS"](../../../CLAUDE.md#scss) and [reference/design-tokens.md "Width-token decision ladder"](../../rules/reference/design-tokens.md#width-token-decision-ladder).
+6. **Tokenize before hardcoding.** Pattern SCSS uses `get-color`, `get-padding`, `get-gap`, `get-font-size`, `get-layout`, etc. — never raw hex or `px-rem(N)` for any value that recurs. New container width? Add `settings.custom.layout.{name}` in theme.json + use `get-layout('{name}')`. See [reference/coding-conventions.md "Tokenize repeated values"](../../rules/reference/coding-conventions.md#tokenize-repeated-values) and [reference/design-tokens.md "Width-token decision ladder"](../../rules/reference/design-tokens.md#width-token-decision-ladder).
 7. **Don't hide unwanted content with CSS.** If the page has seeded blocks/widgets the design doesn't want, remove them at the source via MCP — never `display: none`. See [CLAUDE.md "Content vs CSS"](../../../CLAUDE.md#content-vs-css-hard-rule).
 8. **Asset URLs go through the `background-image()` mixin**, never raw `url('../../assets/...')`. Webpack resolves `url()` from the bundle entry, not the partial; raw paths silently break the build. Drop assets flat into `assets/images/` and call `@include background-image('name')` (default extension is `.svg`). See `src/design/tools/_media.scss` for the mixin.

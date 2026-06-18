@@ -72,7 +72,27 @@ See [skills/create-acf-block.md](../skills/create-acf-block.md) for the full pro
 
 ## Pattern categories
 
-`hero`, `features`, `cta`, `testimonials`, `team`, `pricing`, `text`, `gallery`, `faq`, `stats`, `logos`.
+Built-in (registered by core): `hero`, `features`, `cta`, `testimonials`, `team`, `pricing`, `text`, `gallery`, `faq`, `stats`, `logos`. A pattern's `Categories:` header uses the namespaced form `chisel-patterns/{slug}`.
+
+**A category must be registered before use — an unregistered slug is silently dropped and the pattern falls into "Uncategorized".** Prefer a built-in; only add a new one when none fit.
+
+### Registering a custom category (project layer)
+
+Never edit core's list in `core/WP/Blocks.php` — core exposes the **`chisel_block_patterns_categories`** filter. Add categories via `block_patterns_categories()` in `custom/app/WP/Blocks.php` (the `Chisel\WP\Custom\Blocks` class — create it with `HooksSingleton` and `get_instance()` it in `custom/functions.php` if absent; register the filter in `filter_hooks()`). Key by **unprefixed** slug; core prepends the `chisel-patterns/` namespace and `[Theme Name]` label.
+
+```php
+// custom/app/WP/Blocks.php — inside block_patterns_categories()
+$custom_categories = array(
+    'process' => array(
+        'label'       => __( 'Process', 'chisel' ),
+        'description' => __( 'Process / steps sections.', 'chisel' ),
+    ),
+);
+
+return array_merge( $categories, $custom_categories );
+```
+
+Then a pattern can use `Categories: chisel-patterns/process`.
 
 ## Root wrapper rule
 
@@ -98,5 +118,13 @@ In `src/scripts/editor/mods/` (registered via `blocks-mods.js`). Several add cus
 - **core-button.js**: adds `buttonSize`, `buttonIcon`, `buttonIconPosition` attrs to `core/button`, kept in sync with classes `is-size-{size}`, `has-icon has-icon-{name}`, `has-icon-left`. **When seeding a button icon/size, set the attr AND the class:** e.g. `{"buttonIcon":"arrow-right","className":"… has-icon has-icon-arrow-right"}`. Class-only works visually but the editor control shows empty and a later edit can wipe it. Icon `{name}` must be in `$static-icons`.
 - **blocks-alignment.js**: on select, force-sets a default `align` per block from the PHP-provided `chiselEditorScripts.blocksDefaultAlignment` map. A seeded `align` on those blocks may be overwritten when the user selects the block — check the map (or just rely on it) rather than fighting it.
 - **core-spacer.js**: forces every `core/spacer` to `height:"auto"` in the editor — spacer size comes ONLY from the `is-style-{size}` padding, never the `height` attr. Always seed `{"height":"auto","className":"is-style-{size}"}`. See [design-tokens.md "Picking the spacer style"](design-tokens.md#picking-the-spacer-style).
+
+## Spacing between sibling blocks
+
+Composition rule (the spacer *sizing* math — px→style mapping, margin-sync, flex double-gap trap — lives in [design-tokens.md "Spacing between blocks"](design-tokens.md#spacing-between-blocks)):
+
+- **Default a `core/spacer` between every two sibling inner blocks** — even when Figma uses a uniform `gap`. Editors need draggable handles; `blockGap` and CSS `gap` give none and are invisible to the editor. NEVER use `blockGap` or CSS `gap` in pattern SCSS for sibling spacing. One-off margins or section padding in pattern SCSS are fine.
+- **Walk the markup BEFORE serializing.** For every adjacent sibling pair, if the design shows space, insert a spacer — do this while writing, not after.
+- Pair with the `disableBottomMargin` + `u-no-margin-bottom` rule above (every block immediately followed by a spacer, and every last child of a container) or base margin + spacer = double gap.
 
 Editor-only UI helpers (not seed-affecting): `components/BlockEditSelector.js` (an "Edit {block}" button), `components/RenderAppender.js` (custom InnerBlocks inserter), `blocks.js` (adds `e-block-sidebar--{block}` class to the inspector), `utils.js` (icon choices for the button mod).

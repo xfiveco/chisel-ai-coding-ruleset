@@ -97,40 +97,28 @@ For any content insert/edit, image upload, ACF field, theme mod, option, nav men
 
 Page title display (ACF `page_title_display`): `hide` (hero contains its own H1), `hide-visually` (custom visual but H1 needed for SEO), `show` (default — design shows a page title heading).
 
-**Silent-failure traps** (cause "Block validation failed" or wrong markup the agent won't catch):
-
-- Call `xfive-blocks-block-schema` before every block markup, every type, every time. Chisel ACF blocks use `chisel/{name}`, NOT `acf/{name}`. Failed call = block missing / build not run / wrong slug — stop, don't guess. Wrong attrs are silently ignored.
-- **Static vs dynamic seed shape (check `renderMode` in schema response).** Static (`renderMode: "static"`, client `save()` returns JSX) MUST be paired tags with rendered inner HTML: `<!-- wp:name {attrs} -->INNER<!-- /wp:name -->`. Dynamic (`renderMode: "dynamic"`, server `render_callback`, including ACF blocks) may self-close: `<!-- wp:name {attrs} /-->`. Self-closing a static block stores empty inner HTML; the editor re-runs `save()`, sees a diff, shows "Block validation failed".
-- **`seedAs` is necessary but not sufficient.** When attributes change `save()` output (image `width`/`height`/`sizeSlug`, button URL/className, heading `level`, group `tagName`/`layout`, etc.) → always paired tags with fully-rendered inner HTML, even if schema says self-closing is OK. When in doubt, use paired tags.
-- **`useBlockProps.save({className})` auto-prefixes `wp-block-{namespace}-{name}`** onto the wrapper element. Read the block's `save.js` and include the auto-prefix in hand-written seed markup.
-- **No whitespace inside containers wrapping `<InnerBlocks.Content />`.** Pretty-printing seeded HTML triggers "Block validation failed". Inline the inner-block comments tightly: `<div class="b-foo__content"><!-- wp:paragraph --><p>...</p><!-- /wp:paragraph --></div>`.
-- **`core/group` with both `backgroundColor` AND `textColor` requires `has-background` class** on the rendered `<div>` — in addition to `has-background-color has-{slug}-background-color has-text-color`. Missing it = "Block validation failed" on save. Full saved class list: `has-background-color has-{slug}-background-color has-text-color has-background`. (When only one of the two is set, omit `has-background`.)
-- **When unsure: round-trip.** Insert one instance in the editor manually, save, `xfive-posts-post-get-content`, copy that exact markup. The block's own `save()` is ground truth.
-- Pages created with `post_status: "publish"` (not draft) for immediate preview. New ACF block → pause, user builds, schema-check passes, then seed (schema fails until `npm run build-scripts` runs).
+**Before hand-writing any block markup, read [mcp-workflow.md "Silent-failure traps"](ai/rules/reference/mcp-workflow.md#silent-failure-traps-block-seeding).** Seeding has several traps that cause "Block validation failed" or wrong markup the agent won't catch (schema-before-every-block, `renderMode` seed shape, `useBlockProps` auto-prefix, `InnerBlocks` whitespace, `core/group` `has-background`, round-trip-when-unsure). Pages created `publish` (not draft); new ACF block → pause for user to build, schema-check, then seed.
 
 ### Spacing between blocks
 
-- **Default `core/spacer` between every two sibling inner blocks** (even when Figma uses a uniform `gap`) — editors need draggable handles. NEVER `blockGap` or CSS `gap` in pattern SCSS for sibling spacing (invisible to editors). One-off margins or section padding in pattern SCSS → OK.
-- **Walk the markup BEFORE serializing.** For every adjacent sibling pair, if Figma shows space, insert a spacer. Do this while writing, not after.
+- **Default a `core/spacer` between every two sibling inner blocks** (even when Figma uses a uniform `gap`) — editors need draggable handles; never `blockGap`/CSS `gap` for sibling spacing.
 
-Spacer style selection (derive from theme.json, not hardcoded), spacer + flex double-spacing trap, `disableBottomMargin` / `u-no-margin-bottom` rules, and Chisel auto-margin sync → see [ai/rules/reference/design-tokens.md "Spacing between blocks"](ai/rules/reference/design-tokens.md#spacing-between-blocks).
+Composition rule + `disableBottomMargin` pairing → [blocks.md "Spacing between sibling blocks"](ai/rules/reference/blocks.md#spacing-between-sibling-blocks). Spacer-size selection (px→style math), flex double-gap trap, auto-margin sync → [design-tokens.md "Spacing between blocks"](ai/rules/reference/design-tokens.md#spacing-between-blocks).
 
 ### Reusing existing components (slider, icons, base styles)
 
-- **Diff-only overrides.** Read the global partial first (`src/styles/components/_slider.scss`, `_buttons.scss`, etc.) before styling shared selectors. Only write rules that DIFFER from the default; never re-declare base props.
-- **Match the global selector chain to win specificity.** Globals like `.swiper-navigation-wrapper .swiper-button` (0,2,0) tie with `.b-foo .swiper-button` (0,2,0) → source order wins, global beats your override. Mirror the chain + prepend your block scope. Otherwise `!important` with a one-line `// beats _slider.scss:NN` comment.
-- **`!important` is OK** against vendor inline/runtime styles (Swiper, Gravity Forms) when specificity can't outrank them. Prefer specificity first.
-- **Swiper, icons, SVG cleanup, asset enqueueing** → [ai/rules/reference/assets-and-scripts.md](ai/rules/reference/assets-and-scripts.md). Init Swiper via `data-*` attrs only (never hand-init); add new icons as variants in `assets/icons-source/` + `$static-icons`, never raw `mask: url(...)`.
+- **Diff-only overrides.** Read the global partial first (`src/styles/components/_slider.scss`, `_buttons.scss`, etc.) before styling shared selectors — write only rules that DIFFER from the default, never re-declare base props.
+- Specificity strategy for beating globals (match-the-chain, when `!important` is OK), Swiper/icons/SVG-cleanup/enqueueing → [ai/rules/reference/assets-and-scripts.md](ai/rules/reference/assets-and-scripts.md). Init Swiper via `data-*` attrs only; add icons as variants in `assets/icons-source/` + `$static-icons`, never raw `mask: url(...)`.
 
 ### SCSS
 
 - Always `@use '~design' as *;` at top of every SCSS file. Use design helpers (`get-color`, `get-gap`, `get-font-size`, `get-layout`, etc.) — never raw `var(--wp--*)` custom properties or raw hex/px for tokenized values.
-- **Asset URLs in SCSS go through the `background-image()` mixin** (in `src/design/tools/_media.scss`) — never write raw `url('../../assets/...')` in pattern/block SCSS. Webpack resolves `url()` from the bundle entry, not from the partial, so relative paths from a partial silently break the build. Drop the SVG/PNG flat into `assets/images/` and call `@include background-image('name')` (default extension is `.svg`). **From inside an ACF/custom block** (`src/blocks*/{name}/style.scss`), pass `$is-block: true` — block SCSS lives one level deeper than pattern SCSS, and the mixin uses that flag to add the extra `../`.
-- **Any repeated dimension (width, max-width, padding step, color, shadow, radius, transition) belongs in `theme.json` + a `get-*` helper**, not as a hardcoded `px-rem(…)` or hex literal in SCSS. If no helper exists for the category (e.g. you need a frame max-width and there's no `get-layout` yet), add the token under `settings.custom.{category}` in `theme.json` AND add the matching accessor in `src/design/tools/_theme.scss`. Hardcoded values are only acceptable for one-off, non-repeating, non-tokenizable values (e.g. `transform: translateY(-1px)` for a micro nudge). When in doubt, tokenize.
+- **Tokenize repeated values** — any repeated dimension (width, padding step, color, shadow, radius, transition) belongs in `theme.json` + a `get-*` helper, never a hardcoded `px-rem(…)`/hex. One-off non-repeating values only may stay raw.
+- **Asset URLs in SCSS go through the `background-image()` mixin** — never raw `url('../../assets/...')` (silently breaks the webpack build).
 - BEM prefixes: `.c-` components, `.o-` objects, `.u-` utilities, `.b-` blocks, `.p-` patterns, `is-`/`has-` state.
 - `_index.scss` barrels under `src/styles/{folder}/` are **auto-generated by the build** — never hand-edit; drop new partials and the build picks them up.
 
-Full helper signatures, ITCSS layer order, JS/Twig conventions → [ai/rules/reference/coding-conventions.md](ai/rules/reference/coding-conventions.md).
+Asset-URL mixin mechanics (`$is-block`, `assets/images/` placement), tokenize-or-extend procedure, full helper signatures, ITCSS layer order, JS/Twig conventions → [ai/rules/reference/coding-conventions.md](ai/rules/reference/coding-conventions.md).
 
 ### Block type preference: ACF default, native React = stop and ask (HARD RULE)
 
@@ -187,7 +175,7 @@ Reference docs own descriptive facts (file structures, decision ladders, token i
 - [section-mapping-decisions](ai/rules/reference/section-mapping-decisions.md) — decision ladder + quick-pick table → routes to the right scaffolding skill
 - [screen-build-order](ai/rules/reference/screen-build-order.md) — phase order + verification checklist
 - [figma-import-template](ai/rules/reference/figma-import-template.md) / [progress-template](ai/rules/reference/progress-template.md) — thin pointers; format + procedure live in the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md)
-- [mcp-workflow](ai/rules/reference/mcp-workflow.md) — MCP tool usage (content, ACF, options, theme mods)
+- [mcp-workflow](ai/rules/reference/mcp-workflow.md) — MCP tool usage (posts, blocks, media, ACF, terms, menus, options, widgets, content, theme mods)
 - [coding-conventions](ai/rules/reference/coding-conventions.md) — PHP/JS/SCSS/Twig conventions
 - [twig-templating](ai/rules/reference/twig-templating.md) — Timber context, functions, hierarchy → routes to `create-component`
 - [assets-and-scripts](ai/rules/reference/assets-and-scripts.md) — asset registration, icons, Chisel hooks

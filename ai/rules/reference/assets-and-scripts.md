@@ -112,6 +112,14 @@ The framework renders text arrows in `.swiper-button` `::after`. To replace with
 
 When the pagination container is a flex row, bullets need `flex-shrink: 0` or they collapse to 0 width and disappear.
 
+## Overriding shared component styles (slider, base styles)
+
+When restyling a selector that a global partial already styles (`src/styles/components/_slider.scss`, `_buttons.scss`, etc.):
+
+- **Diff-only.** Read the global partial first. Only write rules that DIFFER from the default; never re-declare base props.
+- **Match the global selector chain to win specificity.** A global like `.swiper-navigation-wrapper .swiper-button` (0,2,0) ties with `.b-foo .swiper-button` (0,2,0) → source order wins, so the global beats your override. Mirror the chain and prepend your block scope. If you still can't outrank it, use `!important` with a one-line `// beats _slider.scss:NN` comment.
+- **`!important` is OK** against vendor inline/runtime styles (Swiper, Gravity Forms) when specificity can't outrank them — but prefer specificity first.
+
 ## Chisel hooks reference
 
 The lists below cover the load-bearing hooks. **Not exhaustive** — for less common hooks (CPT/taxonomy defaults like `chisel_default_post_type_supports_{slug}`, per-asset enqueue gates like `chisel_enqueue_frontend_script`, loader-behavior hooks like `chisel_async_scripts` / `chisel_preload_styles_start_with`, block hooks like `chisel_styles_inline_size_limit`, etc.), grep `core/` for `apply_filters` / `do_action` to find the canonical set.

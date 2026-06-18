@@ -30,6 +30,8 @@ Documented token values, mixin defaults, and block-style lists in these skills a
 
 **Default to global.** Don't duplicate pattern-scoped overrides for every section when the design wants different defaults.
 
+**Don't restate a global, either.** Once a value lives in theme.json (`styles.typography`, `styles.elements.hN`, `settings.custom.*`) or a base mixin, it cascades everywhere — never re-declare it in pattern/component/block SCSS. See [reference/coding-conventions.md "Don't duplicate global styles"](../../rules/reference/coding-conventions.md#dont-duplicate-global-styles-hard-rule).
+
 ## Procedure
 
 1. Extract design properties from the spec — `get_design_context` output (Figma mode), or read the mockup / user description (other modes).

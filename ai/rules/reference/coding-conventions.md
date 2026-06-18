@@ -67,6 +67,18 @@ JS helpers: `src/scripts/modules/utils.js` for shared frontend utilities (DOM, t
 - Modern Sass: `@use` and `@forward` (not `@import`)
 - **Always** `@use '~design' as *;` at top of every SCSS file — use helper functions, never raw CSS vars
 
+### Don't duplicate global styles (HARD RULE)
+
+theme.json is the single source of truth for global element, typography, and spacing defaults — `styles.typography`, `styles.elements.hN`, `styles.elements.link`, and `settings.custom.*` cascade to every block, pattern, and component automatically. Base mixins (`src/design/tools/`) and element partials (`src/styles/elements/`) cascade the same way.
+
+Before declaring `line-height`, `font-size`, `color`, `font-family`, margin, etc. on **any** selector — pattern, component, block, or element SCSS — check whether theme.json (or the relevant base mixin / global partial) already sets it:
+
+- **Already set globally** → omit the declaration. Restating a global value is dead CSS that drifts out of sync when the global changes.
+- **Should be global but isn't yet** → add it to theme.json (or the base mixin / element SCSS), don't repeat it per-selector.
+- **Genuinely a per-selector divergence** → declare only the property that differs, never the whole block of base props (diff-only — see [assets-and-scripts.md "Overriding shared component styles"](assets-and-scripts.md#overriding-shared-component-styles-slider-base-styles)).
+
+This applies theme-wide, not just to patterns.
+
 ### Design tool helpers
 
 ```scss
@@ -90,6 +102,22 @@ px-rem(24)                  // one-off px → rem conversion (use for non-tokeni
 ```
 
 Full tool list: `src/design/tools/`.
+
+### Nest breakpoints inside the rule (HARD RULE)
+
+Put responsive overrides **inside** the selector via a nested `@include bp(...)` / `@include bp-down(...)` — never re-declare the selector in a separate media query at the bottom of the file. Sass supports nested media queries, so each property's responsive variant lives next to its base value:
+
+```scss
+.c-card {
+  padding: get-padding('large');
+
+  @include bp-down('medium') {
+    padding: get-padding('small');
+  }
+}
+```
+
+Duplicating the selector in a trailing media block splits one element's styles across two places — the base and the responsive override drift out of sync when either changes, and the reader has to scroll to reconcile them. One selector, one block.
 
 ### Asset URLs in SCSS (build trap)
 

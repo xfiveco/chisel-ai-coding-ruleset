@@ -113,6 +113,7 @@ Composition rule + `disableBottomMargin` pairing → [blocks.md "Spacing between
 ### SCSS
 
 - Always `@use '~design' as *;` at top of every SCSS file. Use design helpers (`get-color`, `get-gap`, `get-font-size`, `get-layout`, etc.) — never raw `var(--wp--*)` custom properties or raw hex/px for tokenized values.
+- **Don't duplicate global styles (HARD RULE).** theme.json (`styles.typography`, `styles.elements.hN`, `settings.custom.*`) and base mixins cascade to every block, pattern, and component — never re-declare a value they already set (e.g. an element/heading `line-height`). If a value should be global, add it to theme.json instead of repeating it per-selector. Applies theme-wide, not just patterns. Full rule → [reference/coding-conventions.md "Don't duplicate global styles"](ai/rules/reference/coding-conventions.md#dont-duplicate-global-styles-hard-rule).
 - **Tokenize repeated values** — any repeated dimension (width, padding step, color, shadow, radius, transition) belongs in `theme.json` + a `get-*` helper, never a hardcoded `px-rem(…)`/hex. One-off non-repeating values only may stay raw.
 - **Asset URLs in SCSS go through the `background-image()` mixin** — never raw `url('../../assets/...')` (silently breaks the webpack build).
 - BEM prefixes: `.c-` components, `.o-` objects, `.u-` utilities, `.b-` blocks, `.p-` patterns, `is-`/`has-` state.

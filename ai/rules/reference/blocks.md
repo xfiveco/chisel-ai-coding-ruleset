@@ -94,6 +94,10 @@ return array_merge( $categories, $custom_categories );
 
 Then a pattern can use `Categories: chisel-patterns/process`.
 
+## Pattern slug naming (HARD RULE)
+
+Name patterns by **function, not page** — the slug is the section type, not where it first appears: `hero` not `home-hero`, `pill-list` not `industry-pills`. Variant-qualify (`hero-split`, `cta-banner`), never page-qualify. Patterns are reusable across pages/CPTs; a page-named slug couples one to a single context. Reuse an existing pattern (or add a variant) before minting a new slug — see [section-mapping-decisions.md "Shared components rule"](section-mapping-decisions.md#shared-components-rule). Page-prefix only a pattern that is genuinely one-off and page-bound.
+
 ## Root wrapper rule
 
 Every pattern has a single root `core/group` (or `core/cover`) with class `p-{slug}`. Required for:

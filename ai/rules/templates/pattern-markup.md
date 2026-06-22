@@ -7,7 +7,7 @@ WordPress block grammar for common pattern building blocks. Copy and adapt. Alwa
 **Group (constrained, no bg):**
 
 ```html
-<!-- wp:group {"align":"full","className":"p-{slug}","layout":{"type":"constrained"}} -->
+<!-- wp:group {"metadata":{"name":"{Pattern Title}"},"align":"full","className":"p-{slug}","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull p-{slug}">
   <!-- inner blocks -->
 </div>
@@ -17,7 +17,7 @@ WordPress block grammar for common pattern building blocks. Copy and adapt. Alwa
 **Group (flex, vertical):**
 
 ```html
-<!-- wp:group {"align":"full","className":"p-{slug}","layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+<!-- wp:group {"metadata":{"name":"{Pattern Title}"},"align":"full","className":"p-{slug}","layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
 <div class="wp-block-group alignfull p-{slug}">
   <!-- inner blocks -->
 </div>
@@ -27,7 +27,7 @@ WordPress block grammar for common pattern building blocks. Copy and adapt. Alwa
 **Cover (full-width with bg):**
 
 ```html
-<!-- wp:cover {"overlayColor":"foreground","isUserOverlayColor":true,"align":"full","layout":{"type":"constrained"}} -->
+<!-- wp:cover {"metadata":{"name":"{Pattern Title}"},"overlayColor":"foreground","isUserOverlayColor":true,"align":"full","layout":{"type":"constrained"}} -->
 <div class="wp-block-cover alignfull">
   <span
     aria-hidden="true"

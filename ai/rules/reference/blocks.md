@@ -105,6 +105,8 @@ Every pattern has a single root `core/group` (or `core/cover`) with class `p-{sl
 1. **Scoped styling** — custom class isolates pattern's inner blocks from same blocks elsewhere
 2. **Structural integrity** — single root keeps pattern as one selectable unit in editor
 
+The root wrapper also carries `"metadata":{"name":"{Pattern Title}"}` (per pattern — its human Title, matching the `Title:` header) so it shows a readable label in the editor List View instead of a generic "Group".
+
 Pattern SCSS: `src/styles/patterns/_{slug}.scss`, scoped under `.p-{slug}` (file unprefixed, CSS class keeps `p-`).
 
 **Class only the root; target inner blocks by tag (HARD RULE).** Only the root group carries `p-{slug}`. **Never** add a BEM `__element` class to leaf/text blocks (paragraph, heading, list, image) — style them by tag from the root: `.p-{slug} h2`, `.p-{slug} p`, or by the block's own class `.p-{slug} .wp-block-media-text`. A `p-{slug}__heading` class lives only on the seeded instance, so a paragraph an editor adds later inherits nothing. Add a `p-{slug}__{name}` class to a **structural** block (inner group, columns, media-text) **only when** tag/descendant targeting can't single it out (e.g. two sibling inner groups needing different styles) — never to text elements.

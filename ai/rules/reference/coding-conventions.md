@@ -6,7 +6,7 @@
 - Use `HooksSingleton` trait for classes with hooks
 - Implement `action_hooks()` and `filter_hooks()` methods
 - Factory classes for registration (CPTs, taxonomies, blocks)
-- WordPress Coding Standards (PHPCS)
+- WordPress Coding Standards — **`phpcs.xml` at the theme root is the source of truth; adhere to it for all PHP you write.** Run `npm run build` (includes phpcs) or `composer phpcs` to check. It deviates from stock WPCS (e.g. Yoda conditions disabled → variable on the left; short ternary allowed) — read the ruleset rather than assuming stock WPCS, and don't fight its choices. Match the ruleset on lines you write or edit; don't reflow untouched legacy code that predates a rule.
 
 ### Boot order (`functions.php` → custom singletons)
 

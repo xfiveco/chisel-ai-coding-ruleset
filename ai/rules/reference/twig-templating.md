@@ -133,7 +133,12 @@ Located in `core/Timber/`:
 
 Class mapping in `Site.php`: `post` and `page` → `ChiselPost`, `product` → `ChiselProduct`, `attachment` → `ChiselImage`.
 
-To add custom CPT class: extend `ChiselPost`, add domain methods, register in `post_classmap()`. Place in `custom/app/Timber/` to override.
+### Per-post logic → method on the Timber class (HARD RULE)
+
+Logic keyed on a single post/product/term goes as a **method on its Timber class**, read as `{{ post.method }}` — NOT a `fn(post)` Twig function in `custom/app/WP/Twig.php` (those are for ownerless cross-cutting helpers only: breadcrumbs, global lookups).
+
+- **Why**: memoize an expensive lookup (a WC product, ACF group, related query) once in a private accessor and every method reuses it; a Twig function re-resolves on each call. Reads naturally and the object is the obvious home for the next dev.
+- **How**: `post`/`page`/`product`/`attachment` are already mapped, so a custom class **subclasses** the core one (place in `custom/app/Timber/`, `extends` the `\Chisel\Timber\*` class) and remaps in `Site.php` `post_classmap()`. New CPT: extend `ChiselPost`. Items must come via Timber (`Timber::get_posts()` / context) or the classmap won't apply.
 
 ## Components
 

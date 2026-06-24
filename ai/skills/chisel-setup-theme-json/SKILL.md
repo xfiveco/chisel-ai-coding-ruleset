@@ -59,6 +59,10 @@ Chisel uses a fixed taxonomy. Reuse existing slug names whenever possible so SCS
 
 **Rule:** if the spec has richer structure (e.g., `surface/muted`, `border/subtle`, `brand/tertiary`), add as new slugs alongside existing ones — don't force into existing slots.
 
+**Foundation now, sections later.** Bootstrap the design-system *foundation* here — palette, type scale, spacing scale, radius, shadows (the Figma Variables collection). Do NOT pre-create per-section spacing or one-off widths; those get added incrementally as sections introduce them.
+
+**Repurpose, don't delete.** To clear a sample token the spec doesn't use, change its *value* and keep the slug name — don't remove it. Removing a protected slug breaks the build, and even a non-protected example token may be used by a later page. Park unmatched ones on a "remove later" list; prune only at project end, after grep proves zero references in `src/`, patterns, and editor JS — never a protected slug.
+
 **Do NOT keep Chisel starter values if they diverge from the spec.** The Chisel defaults are a starting point, not the final product ([CLAUDE.md](../../../CLAUDE.md)). This applies to spacing especially — "close enough" is not acceptable. If the spec uses 16/24/32/48/64/96 and Chisel's default scale is 4/8/12/16/20/24/28/32/48, **replace the scale with the spec's values** (keeping the same slug numbers so SCSS keeps resolving). Same for colors and fonts: values must match the spec exactly.
 
 **Search/replace for slug renames.** If you need to rename a slug (color, font-size, spacing), always follow with a project-wide SCSS search/replace for `get-color('old-slug')`, `get-font-size('old-slug')`, `get-margin('old-slug')`, etc. Never leave stale references.

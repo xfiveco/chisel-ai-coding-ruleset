@@ -4,16 +4,19 @@ Where to add things in the Chisel theme.
 
 ## Registrations (PHP)
 
-| Feature                | Location                            | Filter/Action                                       |
-| ---------------------- | ----------------------------------- | --------------------------------------------------- |
-| Custom Post Types      | `custom/app/WP/CustomPostTypes.php` | `chisel_custom_post_types`                          |
-| Custom Taxonomies      | `custom/app/WP/CustomPostTypes.php` | `chisel_custom_taxonomies`                          |
-| ACF Options Pages      | `custom/app/WP/Acf.php`             | `chisel_acf_options_pages`                          |
-| ACF Options Sub-Pages  | `custom/app/WP/Acf.php`             | `chisel_acf_options_sub_pages`                      |
-| Custom Assets          | `custom/app/WP/Assets.php`          | `chisel_frontend_styles`, `chisel_frontend_scripts` |
-| Twig Functions/Filters | `custom/app/WP/Twig.php`            | `chisel_twig_register_functions`                    |
-| AJAX/REST Endpoints    | `custom/app/WP/Ajax.php`            | `chisel_ajax_routes`                                |
-| Timber context data    | `custom/app/WP/Site.php`            | `timber/context` (priority 11+)                     |
+| Feature                                | Location                                  | Filter/Action                                       |
+| -------------------------------------- | ----------------------------------------- | --------------------------------------------------- |
+| Custom Post Types                      | `custom/app/WP/CustomPostTypes.php`       | `chisel_custom_post_types`                          |
+| Custom Taxonomies                      | `custom/app/WP/CustomPostTypes.php`       | `chisel_custom_taxonomies`                          |
+| ACF Options Pages                      | `custom/app/WP/Acf.php`                   | `chisel_acf_options_pages`                          |
+| ACF Options Sub-Pages                  | `custom/app/WP/Acf.php`                   | `chisel_acf_options_sub_pages`                      |
+| Custom Assets                          | `custom/app/WP/Assets.php`                | `chisel_frontend_styles`, `chisel_frontend_scripts` |
+| Twig Functions/Filters                 | `custom/app/WP/Twig.php`                  | `chisel_twig_register_functions`                    |
+| AJAX/REST Endpoints                    | `custom/app/WP/Ajax.php`                  | `chisel_ajax_routes`                                |
+| Timber context data                    | `custom/app/WP/Site.php`                  | `timber/context` (priority 11+)                     |
+| Plugin features (Yoast, Woo, WPML, GF) | `custom/app/Plugins/{Plugin}/{Class}.php` | the plugin's own hooks (`wpseo_*`, `woocommerce_*`) |
+
+**Plugin-specific features** (anything keyed off a third-party plugin's hooks) go under `custom/app/Plugins/{Plugin}/` — namespace `Chisel\Plugins\Custom\{Plugin}\{Class}` (the autoloader strips `Custom`), `HooksSingleton`, registered in `custom/functions.php`. Mirrors `core/Plugins/{Plugin}/`. Don't put plugin logic in `custom/app/WP/`.
 
 ## Source code
 

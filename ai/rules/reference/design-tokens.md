@@ -19,17 +19,14 @@ Usage: `var(--wp--preset--color--{slug})` or SCSS `get-color('slug')`.
 
 ## Mapping Figma tokens → theme.json (HARD RULE — match VALUES, never names)
 
-**A Figma token name is NOT its Chisel slug. Match by resolved value, not by matching alias names.** Figma's spacing/size names are arbitrary and differ per file — e.g. Figma `large` = 48px but Chisel `get-gap('large')` = 32px (slug `70`/2rem); Figma `base` = 24px. Mapping Figma `large` → Chisel `large` by name silently ships the wrong value.
+Match every token by its **resolved value** (px / hex / weight), never by its name. Read the value from Figma (`get_variable_defs` — the only ground truth) and from the current `theme.json`, then pick the slug whose value matches. If none matches, map to the nearest step; extend `theme.json` only if Figma has a genuinely denser scale. **Never rename protected slugs** (palette + spacing aliases) to mirror Figma — SCSS, helpers, and theme.json reference them by name. Use a Figma name as a slug **only** for a brand-new token Chisel lacks.
 
-Procedure for **every** Figma-sourced value (spacing, gap, padding, font-size, radius, color, shadow, line-height):
+**False friends — same name, different value (never map name-to-name):**
 
-1. Call `get_variable_defs` on the node to get the **resolved value** (`48`, `#24c1b1`, `700`, …). This is the only ground truth.
-2. Read the current `theme.json` and find the slug whose **value matches** (48px → `gap`/`padding` alias that resolves to `3rem`, which is `xlarge` → spacing `80`). Use that slug's `get-*()` helper.
-3. If **no** slug matches the value, map to the nearest existing step (per "Design tokens" rule in CLAUDE.md), and only extend `theme.json` if Figma genuinely has a denser scale. **Do NOT rename existing slugs to mirror Figma** — palette + spacing aliases are protected (SCSS, helpers, and theme.json reference them by name; renaming breaks call sites).
+- `large` — Chisel's is mid-scale, not the biggest; Figma `large` / `xl` map *above* it (`xlarge` / `big`).
+- `medium` — Chisel's spacing value ≠ Figma's; check the px.
 
-Do NOT trust: the Figma token's **name**, the rendered `get_design_context` CSS, or the `weight:`/`size:` fields inside a `Font(...)` style summary — each can disagree with the bound variable (e.g. a `nav item/font-weight` variable of `900` rendering as `weight: 700`). When a bound variable and the rendered value conflict, the design's visual intent wins — surface the conflict to the user rather than silently picking one.
-
-The current alias→value map drifts as the project adapts — **always re-read `theme.json` to confirm**, never assume a slug's value from memory or from this doc.
+Don't trust the Figma token's **name**, the rendered `get_design_context` CSS, or the `weight:` / `size:` in a `Font(...)` summary — each can disagree with the bound variable. On conflict, the design's visual intent wins — surface it to the user. Always re-read `theme.json`; never assume a slug's value from memory or this doc.
 
 - **body**: Roboto 300/700 — `var(--wp--preset--font-family--body)`
 - **headings**: Manrope 700/800 — `var(--wp--preset--font-family--headings)`
@@ -102,7 +99,7 @@ Default to a `core/spacer` between every two sibling inner blocks (even when Fig
 For each spacer, derive the slug from `theme.json` instead of hardcoding. This is the "match VALUES, never names" rule above, applied to spacers — the Figma gap's **resolved px** drives the choice, never the Figma token's name:
 
 1. Get the Figma spacing's **resolved value** via `get_variable_defs` (e.g. `48`), not the token name (Figma `large` may be 48px while Chisel `large` is 32px — see the HARD RULE above).
-2. Compute the **rendered height of each spacer style** from `src/styles/blocks/_core-spacer.scss` + the live `theme.json` margin tokens — each `is-style-{alias}` sets `padding: get-margin('{alias}') 0` (top **and** bottom), so the spacer's rendered height = **2× that margin token**; the base `.wp-block-spacer` (no style class) uses `normal`. Resolve the token's current value (don't assume — margins can change in theme.json), then double it. **Consequence to watch: a small Figma gap often maps to the DEFAULT spacer (no class), and `is-style-large` is double the `large` token — don't pick a style by name expecting it to equal the token's px.**
+2. Read the **rendered height of each spacer style** from `src/styles/blocks/_core-spacer.scss` — each `is-style-{alias}` sets `padding: get-margin('{alias}') 0`, so the spacer's rendered height = **2× that margin token** (e.g. `small` margin 12px → 24px tall; `medium` 24px → 48px; `large` 32px → 64px). The base `.wp-block-spacer` (no style class) is `padding: get-margin('normal') 0` → 48px.
 3. Pick the `is-style-{alias}` whose **rendered height** matches the Figma px (closest if no exact). Seed `"className": "is-style-{alias}"`.
 
 **The `height` attribute is IGNORED — always seed `height:"auto"`.** `src/scripts/editor/mods/core-spacer.js` runs an `editor.BlockEdit` filter that force-sets every `core/spacer` to `height: "auto"` on load. So an inline `height:"32px"` is silently overwritten and the rendered size comes **only** from the `is-style-*` padding. Seeding a px height is dead markup that misleads — write `{"height":"auto","className":"is-style-{alias}"}` with `style="height:auto"` (matches [templates/pattern-markup.md](../templates/pattern-markup.md)).

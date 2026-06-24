@@ -149,7 +149,8 @@ Anything else (hiding the default "Hello World" post, hiding a starter widget yo
 
 ### Design tokens (theme.json)
 
-- Build incrementally — add tokens as Figma screens introduce them. Don't bulk-import upfront.
+- Build incrementally — bootstrap the **design-system foundation** (palette, type/spacing scale, radius, shadows) upfront from the Figma Variables collection (ask the user for the Figma design-system / web-components link if not provided); add **section-level** tokens (per-section spacing, one-off widths) as screens introduce them, not in bulk.
+- Repurpose sample tokens (change value, keep slug name); don't delete during setup — prune only at project end, after grep proves zero references, never a protected slug.
 - NEVER rename protected slugs (palette + spacing aliases) — SCSS references them by name. See [ai/rules/reference/design-tokens.md](ai/rules/reference/design-tokens.md) for the protected set.
 - Extend existing aliases (`margin.medium`, `gap.normal`) rather than renaming — they're used inside theme.json itself.
 - Map Figma spacing to the nearest existing step first; only extend if Figma has a denser scale.

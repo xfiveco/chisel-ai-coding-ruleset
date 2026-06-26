@@ -31,6 +31,16 @@ Every field `name` carries a namespace prefix so names are globally unique acros
 
 Only `name` is prefixed. `label` is what editors see: `Heading`, `Step label`, `CTA text`. Never prefix labels.
 
+## Rule 4 — bump `modified` on EVERY edit to a field-group JSON
+
+Any time you hand-edit a field-group JSON — adding/removing a field, renaming, changing a preference, fixing a key, anything — set the group's top-level `"modified"` to the current unix timestamp (seconds). This applies to **every** ACF JSON file, not just WPML/preference changes.
+
+Why: ACF only flags a group as **"Sync available"** in *Custom Fields → Field Groups* when the JSON `modified` is **newer** than the copy in the database. If you edit the file but leave `modified` stale (or omit it), the admin shows no change and the edit never reaches the DB — a silent no-op. A brand-new group must include `modified` from creation, or it can never be synced.
+
+- The value is unix **seconds** (not milliseconds), e.g. `"modified": 1782460414`.
+- After you sync in the admin, ACFML re-serializes the file and bumps `modified` itself — that overwrite is expected; don't fight it.
+- Editing JSON is only half the round-trip: the edit is inert until the group is synced (or re-imported). Always tell the user to sync after a JSON edit.
+
 ## Example — one field, all three properties distinct
 
 Block `blueprint-process` → prefix `bp`:
@@ -49,3 +59,4 @@ Block `blueprint-process` → prefix `bp`:
 - Block field group → [create-acf-block skill](../../skills/chisel-create-acf-block/SKILL.md)
 - Options page field group → [create-acf-options skill](../../skills/chisel-create-acf-options/SKILL.md)
 - Block file structure + ACF seed-data shape (`_{name}: "field_key"` pointers) → [blocks.md](blocks.md)
+- Per-field WPML translation preferences (`wpml_cf_preferences`, Expert mode) → [acf-wpml-translation.md](acf-wpml-translation.md)

@@ -70,6 +70,7 @@ Entry points:
 - Design tokens / theme.json → [ai/rules/reference/design-tokens.md](ai/rules/reference/design-tokens.md)
 - Twig component → [ai/rules/reference/twig-templating.md](ai/rules/reference/twig-templating.md)
 - ACF field group naming (any block / options / meta-box group) → [ai/rules/reference/acf-naming.md](ai/rules/reference/acf-naming.md)
+- ACF + WPML per-field translation preferences (any field group) → [ai/rules/reference/acf-wpml-translation.md](ai/rules/reference/acf-wpml-translation.md)
 - Skills without a reference owner (`adapt-base-styles`, `adapt-header-footer`) — open the skill directly.
 
 ### Progress tracking
@@ -174,6 +175,7 @@ Reference docs own descriptive facts (file structures, decision ladders, token i
 - [design-tokens](ai/rules/reference/design-tokens.md) — token inventory + protected slugs → routes to `setup-theme-json` / `theme-json`
 - [blocks](ai/rules/reference/blocks.md) — block/pattern file structures, build-pipeline rule, existing styles/mods, ACF field-data shape → routes to `create-acf-block` / `create-block` / `create-pattern` / `extend-core-block`
 - [acf-naming](ai/rules/reference/acf-naming.md) — canonical ACF field group naming (hex keys, filename=key, name prefixes per context) for ALL field groups → routes to `create-acf-block` / `create-acf-options`
+- [acf-wpml-translation](ai/rules/reference/acf-wpml-translation.md) — per-field WPML translation preferences (`wpml_cf_preferences` enum, Expert mode, per-type preset table) for ALL field groups
 - [section-mapping-decisions](ai/rules/reference/section-mapping-decisions.md) — decision ladder + quick-pick table → routes to the right scaffolding skill
 - [screen-build-order](ai/rules/reference/screen-build-order.md) — phase order + verification checklist
 - [figma-import-template](ai/rules/reference/figma-import-template.md) / [progress-template](ai/rules/reference/progress-template.md) — thin pointers; format + procedure live in the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md)

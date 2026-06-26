@@ -23,7 +23,7 @@ Match every token by its **resolved value** (px / hex / weight), never by its na
 
 **False friends — same name, different value (never map name-to-name):**
 
-- `large` — Chisel's is mid-scale, not the biggest; Figma `large` / `xl` map *above* it (`xlarge` / `big`).
+- `large` — Chisel's is mid-scale, not the biggest; Figma `large` / `xl` map _above_ it (`xlarge` / `big`).
 - `medium` — Chisel's spacing value ≠ Figma's; check the px.
 
 Don't trust the Figma token's **name**, the rendered `get_design_context` CSS, or the `weight:` / `size:` in a `Font(...)` summary — each can disagree with the bound variable. On conflict, the design's visual intent wins — surface it to the user. Always re-read `theme.json`; never assume a slug's value from memory or this doc.
@@ -93,6 +93,8 @@ For the per-mode procedure (Figma variable defs vs static asset / prompt parsing
 ## Spacing between blocks
 
 Default to a `core/spacer` between every two sibling inner blocks (even when Figma uses a uniform `gap`) — gives editors draggable handles. `blockGap` and CSS `gap` don't, and `blockGap` is inconsistent across layouts.
+
+This is for spacing _between_ siblings only. A section's own outer top/bottom band padding is NOT a spacer — set it as `style.spacing.padding` on the section's outer block (see [blocks.md "Root wrapper rule"](blocks.md#root-wrapper-rule)).
 
 ### Picking the spacer style
 

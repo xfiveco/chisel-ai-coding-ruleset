@@ -132,6 +132,8 @@ Every pattern has a single root `core/group` (or `core/cover`) with class `p-{sl
 
 The root wrapper also carries `"metadata":{"name":"{Pattern Title}"}` (per pattern — its human Title, matching the `Title:` header) so it shows a readable label in the editor List View instead of a generic "Group".
 
+**Section vertical padding lives on the outer block, not in pattern SCSS.** Set the section's top/bottom band padding as `style.spacing.padding` (`var:preset|spacing|NN` preset) on the root `core/group` — both `core/group` and `core/columns` support `spacing.padding`, so a columns-rooted section can carry it directly. Reserve pattern SCSS for inner/structural spacing the block can't express.
+
 Pattern SCSS: `src/styles/patterns/_{slug}.scss`, scoped under `.p-{slug}` (file unprefixed, CSS class keeps `p-`).
 
 **Class only the root; target inner blocks by tag (HARD RULE).** Only the root group carries `p-{slug}`. **Never** add a BEM `__element` class to leaf/text blocks (paragraph, heading, list, image) — style them by tag from the root: `.p-{slug} h2`, `.p-{slug} p`, or by the block's own class `.p-{slug} .wp-block-media-text`. A `p-{slug}__heading` class lives only on the seeded instance, so a paragraph an editor adds later inherits nothing. Add a `p-{slug}__{name}` class to a **structural** block (inner group, columns, media-text) **only when** tag/descendant targeting can't single it out (e.g. two sibling inner groups needing different styles) — never to text elements.
@@ -154,7 +156,7 @@ In `src/scripts/editor/mods/` (registered via `blocks-mods.js`). Several add cus
 
 ## Spacing between sibling blocks
 
-Composition rule (the spacer *sizing* math — px→style mapping, margin-sync, flex double-gap trap — lives in [design-tokens.md "Spacing between blocks"](design-tokens.md#spacing-between-blocks)):
+Composition rule (the spacer _sizing_ math — px→style mapping, margin-sync, flex double-gap trap — lives in [design-tokens.md "Spacing between blocks"](design-tokens.md#spacing-between-blocks)):
 
 - **Default a `core/spacer` between every two sibling inner blocks** — even when Figma uses a uniform `gap`. Editors need draggable handles; `blockGap` and CSS `gap` give none and are invisible to the editor. NEVER use `blockGap` or CSS `gap` in pattern SCSS for sibling spacing. One-off margins or section padding in pattern SCSS are fine.
 - **Walk the markup BEFORE serializing.** For every adjacent sibling pair, if the design shows space, insert a spacer — do this while writing, not after.

@@ -8,6 +8,29 @@ Descriptive lookup for block types, file structures, and existing styles/mods. F
 
 Set `"ignoreScripts": ["script"]` (or similar) only when that script is SCSS-only (no real frontend JS) — `ignoreScripts` suppresses script execution while still letting webpack build the CSS. If the script has real frontend JS, omit `ignoreScripts` so it loads.
 
+### Block JS/CSS keys — what each file is for
+
+Registration is type-agnostic: native (`src/blocks/`) and ACF (`src/blocks-acf/`) blocks loop the **same** key set (`core/Factories/RegisterBlocks.php`). Both use this model.
+
+| `block.json` key   | File                                  | Context           | Purpose                                                                                                                                       |
+| ------------------ | ------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `editorScript`     | `index.js`                            | Editor only       | Block registration + (native) the `edit.js` component. Imports editor SCSS.                                                                   |
+| `editorStyle`      | `index.css`                           | Editor only       | Editor-only appearance.                                                                                                                       |
+| `script`           | `script.js`                           | Editor + frontend | **CSS entry** (`import './style.scss';`). Carries real JS only for a **native** block that needs the same behavior live in the editor canvas. |
+| `style`            | `style-script.css`, `style-index.css` | Editor + frontend | Shared CSS. **Array** when `style.scss` is imported by both `script.js` and `index.js` — webpack emits one file per entry, so list both.      |
+| `viewScript`       | `view.js`                             | **Frontend only** | **The block's own frontend behavior lives here** — scoped to the block, never shipped to the editor.                                          |
+| `viewStyle`        | `view.css`                            | Frontend only     | Frontend-only CSS (not loaded in editor).                                                                                                     |
+| `viewScriptModule` | `view.js` (ESM)                       | Frontend only     | Same as `viewScript` but registered as an ES module — use only when the block genuinely needs native ESM.                                     |
+
+**Rules (HARD):**
+
+1. **A block's frontend JS lives in the block as `view.js` (`viewScript`)** — not in `src/scripts/modules/`, not pushed into the editor via `script`. One block = one folder for its markup, styles, AND scripts.
+2. **`src/scripts/modules/` is the global/site-wide frontend layer** (nav, scroll, fades, utils — bootstrapped via `app.js`), most of it not block-related. Put code there only when it's genuinely site-global. Block behavior never goes here; a util shared by 2+ blocks is the rare exception, and even then it's a shared helper, not block code.
+3. **`script.js` is the SCSS entry** — it imports `style.scss` so webpack builds `style-script.css` (which feeds the critical-CSS inliner in `core/WP/AcfBlocks.php`). It stays even when the block has frontend JS; the behavior goes in `view.js`, not here.
+4. **`ignoreScripts` = "this key has no JS to run"** (build the CSS, don't enqueue an empty handle). Set it for `script` on any block whose frontend JS is in `view.js` or which has none. It does NOT make `script.js` permanently CSS-only — it's about whether _that key_ carries runnable JS.
+
+**ACF vs native — the only divergence.** ACF blocks render ACF's **field form** in the editor, not the Twig output — so frontend behavior _always_ goes in `view.js`/`viewScript` (`script`-as-JS would load in an editor with nothing to bind to). Native blocks render the real block via `edit.js`, so they may use `script` (drop `ignoreScripts`) **only** when the identical behavior must run live in the editor canvas. Default for both: behavior → `view.js`.
+
 ### Custom WP Block (`src/blocks/{name}/`)
 
 Reference layout: `assets/example-blocks/blocks/example/`. Full file list:
@@ -35,6 +58,8 @@ block.json              # metadata with "acf" key + renderCallback; set "script"
 {name}.twig             # Twig template
 style.scss              # styles — must be `import`ed by script.js so webpack builds style-script.css
 script.js               # REQUIRED — webpack entry. Even if only `import './style.scss';`. Omit and SCSS never compiles → block renders unstyled.
+view.js                 # frontend-only JS (viewScript) — the block's own interactivity lives HERE, not src/scripts/modules/. Add only when the block is interactive.
+view.scss               # frontend-only CSS (viewStyle) — imported by view.js. Optional.
 acf-json/*.json         # ACF field group
 ```
 

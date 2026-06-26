@@ -49,11 +49,12 @@ JS helpers: `src/scripts/modules/utils.js` for shared frontend utilities (DOM, t
 
 ## JavaScript
 
-| Context                                      | Style                                  |
-| -------------------------------------------- | -------------------------------------- |
-| Frontend (`view.js`, `src/scripts/modules/`) | Class-based vanilla ES6, no frameworks |
-| Editor (`edit.js`, `src/scripts/editor/`)    | React/JSX with `@wordpress/*` packages |
-| App entry (`src/scripts/app.js`)             | Import and instantiate modules         |
+| Context                                              | Style                                                                                                                   |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Frontend — block-specific (`view.js` / `viewScript`) | Class-based vanilla ES6, no frameworks. A block's own behavior lives in its `view.js`, never in `src/scripts/modules/`. |
+| Frontend — global/site-wide (`src/scripts/modules/`) | Class-based vanilla ES6. Site-wide concerns (nav, scroll, fades, utils); not block behavior.                            |
+| Editor (`edit.js`, `src/scripts/editor/`)            | React/JSX with `@wordpress/*` packages                                                                                  |
+| App entry (`src/scripts/app.js`)                     | Import and instantiate the global modules                                                                               |
 
 - Frontend: `js-*` prefixed selectors (not CSS classes), `DOMContentLoaded` bootstrap
 - Editor: `useBlockProps()`, `InspectorControls` for sidebar, `InnerBlocks` for nested content

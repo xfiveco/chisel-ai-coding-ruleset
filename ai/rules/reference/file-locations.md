@@ -20,23 +20,24 @@ Where to add things in the Chisel theme.
 
 ## Source code
 
-| Thing                    | Path                                  |
-| ------------------------ | ------------------------------------- |
-| WP Custom Blocks         | `src/blocks/{block-name}/`            |
-| ACF Blocks               | `src/blocks-acf/{block-name}/`        |
-| Block Patterns           | `patterns/{pattern-name}.php`         |
-| Frontend JS modules      | `src/scripts/modules/`                |
-| Editor JS (block mods)   | `src/scripts/editor/mods/`            |
-| Editor JS (block styles) | `src/scripts/editor/blocks-styles.js` |
-| SCSS components          | `src/styles/components/`              |
-| SCSS patterns            | `src/styles/patterns/`                |
-| SCSS elements            | `src/styles/elements/`                |
-| SCSS blocks              | `src/styles/blocks/`                  |
-| SCSS objects             | `src/styles/objects/`                 |
-| SCSS design tools        | `src/design/tools/`                   |
-| Design tokens            | `theme.json`                          |
-| Font files               | `assets/fonts/*.woff2`                |
-| Icon sources             | `assets/icons-source/*.svg`           |
+| Thing                          | Path                                                                                  |
+| ------------------------------ | ------------------------------------------------------------------------------------- |
+| WP Custom Blocks               | `src/blocks/{block-name}/`                                                            |
+| ACF Blocks                     | `src/blocks-acf/{block-name}/`                                                        |
+| Block Patterns                 | `patterns/{pattern-name}.php`                                                         |
+| Frontend JS — block-specific   | `src/blocks/{name}/view.js`, `src/blocks-acf/{name}/view.js` (`viewScript`)           |
+| Frontend JS — global/site-wide | `src/scripts/modules/` (nav, scroll, fades, utils — via `app.js`; NOT block behavior) |
+| Editor JS (block mods)         | `src/scripts/editor/mods/`                                                            |
+| Editor JS (block styles)       | `src/scripts/editor/blocks-styles.js`                                                 |
+| SCSS components                | `src/styles/components/`                                                              |
+| SCSS patterns                  | `src/styles/patterns/`                                                                |
+| SCSS elements                  | `src/styles/elements/`                                                                |
+| SCSS blocks                    | `src/styles/blocks/`                                                                  |
+| SCSS objects                   | `src/styles/objects/`                                                                 |
+| SCSS design tools              | `src/design/tools/`                                                                   |
+| Design tokens                  | `theme.json`                                                                          |
+| Font files                     | `assets/fonts/*.woff2`                                                                |
+| Icon sources                   | `assets/icons-source/*.svg`                                                           |
 
 ## Twig templates
 

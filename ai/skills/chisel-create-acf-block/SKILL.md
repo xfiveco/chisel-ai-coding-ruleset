@@ -22,7 +22,7 @@ Use ACF blocks for repeatable, field-driven content. For interactive UI or free-
 ## Procedure
 
 1. **Check CPT ladder first.** If the block displays entity-like repeating content (case studies, team, portfolio, events), run [section-mapping-decisions.md CPT decision](../../rules/reference/section-mapping-decisions.md#cpt-decision). If all 3 apply → CPT + CPT-driven block with `latest`/`selected` variants ([create-cpt.md](../chisel-create-cpt/SKILL.md) "Pair with a custom block"), NOT a repeater here.
-2. **Create the files** at `src/blocks-acf/{block-name}/`. File list and `block.json` script/style key requirements: [reference/blocks.md "ACF Block"](../../rules/reference/blocks.md#acf-block-srcblocks-acfname). Use the templates below for `block.json`, the Twig template, `style.scss`, `script.js`, and the ACF field group JSON.
+2. **Create the files** at `src/blocks-acf/{block-name}/`. File list and `block.json` script/style key requirements: [reference/blocks.md "ACF Block"](../../rules/reference/blocks.md#acf-block-srcblocks-acfname). Use the templates below for `block.json`, the Twig template, `style.scss`, `script.js` (CSS entry), `view.js` (frontend behavior, only if interactive), and the ACF field group JSON.
 3. **Populate any preset ACF option fields** immediately via `xfive-acf-acf-field-update`.
 4. **Run `npm run dev` or `build-scripts` to compile** — Chisel registers blocks from `build/blocks-acf/`, NOT `src/blocks-acf/`. Until the build runs, the block won't appear and the editor will show "your site doesn't include {block-name} block" on existing posts referencing it.
 5. **Verify** in editor under "Chisel Blocks", then `xfive-blocks-block-schema` to confirm registration.
@@ -63,18 +63,21 @@ Follow `src/blocks-acf/slider/block.json`:
 }
 ```
 
-`script.js` is required as the webpack entry that imports `style.scss` (which produces `style-script.css`). `ignoreScripts: ["script"]` above is the default for SCSS-only blocks — it suppresses script execution while still letting webpack build the CSS.
+`script.js` is the webpack entry that imports `style.scss` (which produces `style-script.css`). It is **CSS-only** — keep `ignoreScripts: ["script"]` so the empty JS handle isn't enqueued. Frontend behavior does NOT go here.
 
-**With real frontend JS** (carousel init, animation, etc.) — drop `ignoreScripts` so the script loads:
+**With real frontend JS** (carousel init, animation, toggles, etc.) — add a `view.js` (`viewScript`); leave `script.js` as the CSS entry with `ignoreScripts` in place:
 
 ```json
 {
   "script": "file:./script.js",
-  "style": ["file:./style-script.css"]
+  "viewScript": "file:./view.js",
+  "style": ["file:./style-script.css"],
+  "viewStyle": ["file:./view.css"],
+  "ignoreScripts": ["script"]
 }
 ```
 
-See [reference/blocks.md](../../rules/reference/blocks.md#file-structures) "Build-pipeline rule" for the broader principle: every SCSS file must be imported by a JS entry listed in block.json or it will not compile.
+`viewStyle`/`view.css` is optional — add it only for frontend-only CSS (imported by `view.js`); shared styles stay in `style.scss`. **The block's JS lives in `view.js`, never in `src/scripts/modules/`** (that layer is for global/site-wide scripts). For ACF blocks always use `viewScript`, not `script`-as-JS: the editor renders the ACF field form, not the Twig output, so editor-loaded behavior has nothing to bind to. See [reference/blocks.md "Block JS/CSS keys"](../../rules/reference/blocks.md#block-jscss-keys--what-each-file-is-for).
 
 ### {block-name}.twig
 
@@ -117,11 +120,17 @@ Image helpers:
 }
 ```
 
-### script.js (optional)
+### script.js (CSS entry — always)
 
 ```js
 import './style.scss';
+```
 
+### view.js (frontend behavior — only when interactive)
+
+Lives in the block; registered via `viewScript`. Never put this in `src/scripts/modules/`.
+
+```js
 class BlockName {
   constructor(element) {
     this.element = element;
@@ -129,11 +138,13 @@ class BlockName {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const elements = document.querySelectorAll('.b-{block-name}');
+  const elements = document.querySelectorAll('.js-{block-name}');
   if (!elements.length) return;
   elements.forEach((el) => new BlockName(el));
 });
 ```
+
+Select on a `js-`-prefixed hook (`.js-{block-name}`), not the styling class — see [Conventions](#guidelines). For shared helpers (DOM utils, throttling) import from `src/scripts/modules/utils.js` rather than duplicating.
 
 ### acf-json/group\_{hash}.json
 

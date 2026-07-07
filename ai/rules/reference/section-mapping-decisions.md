@@ -26,24 +26,24 @@ When implementing a feature end-to-end, follow this order — it prevents costly
 
 ## Quick pick
 
-| Need                                | Approach               | Skill                                               | Example                         |
-| ----------------------------------- | ---------------------- | --------------------------------------------------- | ------------------------------- |
-| Simple text/image section           | Core blocks directly   | —                                                   | No custom code                  |
-| Visual variant of a core block      | Block style            | [extend-core-block](../skills/extend-core-block.md) | Button colors, spacer sizes     |
-| Extra toggle/setting on a block     | Block mod              | [extend-core-block](../skills/extend-core-block.md) | Disable bottom margin           |
-| Layout section with standard blocks | Pattern                | [create-pattern](../skills/create-pattern.md)       | Hero, CTA, features grid        |
-| Repeatable field-driven content     | ACF block              | [create-acf-block](../skills/create-acf-block.md)   | Slider, team grid, testimonials |
-| Complex interactive component       | Custom WP block        | [create-block](../skills/create-block.md)           | Accordion, tabs, carousel       |
-| Entity-like repeating content       | CPT + CPT-driven block | [create-cpt](../skills/create-cpt.md)               | Case studies, team, portfolio   |
+| Need                                | Approach               | Skill                                                               | Example                         |
+| ----------------------------------- | ---------------------- | ------------------------------------------------------------------- | ------------------------------- |
+| Simple text/image section           | Core blocks directly   | —                                                                   | No custom code                  |
+| Visual variant of a core block      | Block style            | [extend-core-block](../../skills/chisel-extend-core-block/SKILL.md) | Button colors, spacer sizes     |
+| Extra toggle/setting on a block     | Block mod              | [extend-core-block](../../skills/chisel-extend-core-block/SKILL.md) | Disable bottom margin           |
+| Layout section with standard blocks | Pattern                | [create-pattern](../../skills/chisel-create-pattern/SKILL.md)       | Hero, CTA, features grid        |
+| Repeatable field-driven content     | ACF block              | [create-acf-block](../../skills/chisel-create-acf-block/SKILL.md)   | Slider, team grid, testimonials |
+| Complex interactive component       | Custom WP block        | [create-block](../../skills/chisel-create-block/SKILL.md)           | Accordion, tabs, carousel       |
+| Entity-like repeating content       | CPT + CPT-driven block | [create-cpt](../../skills/chisel-create-cpt/SKILL.md)               | Case studies, team, portfolio   |
 
 ## Block decision ladder
 
 1. **Pure core blocks** — section is just headings + paragraphs + image + buttons → use core blocks directly inside a pattern. No custom code.
-2. **Core block + block style** — section is a core block (button, spacer, quote) with a color/size variant → add `registerBlockStyle()` entry in `src/scripts/editor/blocks-styles.js` and style in `src/styles/blocks/_core-{name}.scss`. Use [extend-core-block](../skills/extend-core-block.md).
-3. **Core block + mod (toggle)** — on/off behavior (hide margin, reverse columns, invert colors) → block mod filter in `src/scripts/editor/mods/`. Use [extend-core-block](../skills/extend-core-block.md).
-4. **Pattern** — layout composed of several blocks (hero, features grid, CTA band, testimonials, logo strip, FAQ list, pricing table) → use [create-pattern](../skills/create-pattern.md). **Default for most section layouts.**
-5. **ACF block** — anything beyond a pure pattern that needs structured editor fields (slider, team grid, testimonials carousel, logo grid with links, stats counters, hero with file/image/link fields). **Default custom-block choice in Chisel.** Use [create-acf-block](../skills/create-acf-block.md).
-6. **Custom WP (native React) block** — STOP AND ASK THE USER FIRST. Reserve for cases where ACF fields genuinely can't express what the editor canvas needs (in-canvas interactive state, drag-to-reorder, `<InnerBlocks>` composability where editors place arbitrary nested blocks, performance-critical server-render unsuitability). State the specific justification before proposing native React. Use [create-block](../skills/create-block.md) only after user approval.
+2. **Core block + block style** — section is a core block (button, spacer, quote) with a color/size variant → add `registerBlockStyle()` entry in `src/scripts/editor/blocks-styles.js` and style in `src/styles/blocks/_core-{name}.scss`. Use [extend-core-block](../../skills/chisel-extend-core-block/SKILL.md).
+3. **Core block + mod (toggle)** — on/off behavior (hide margin, reverse columns, invert colors) → block mod filter in `src/scripts/editor/mods/`. Use [extend-core-block](../../skills/chisel-extend-core-block/SKILL.md).
+4. **Pattern** — layout composed of several blocks (hero, features grid, CTA band, testimonials, logo strip, FAQ list, pricing table) → use [create-pattern](../../skills/chisel-create-pattern/SKILL.md). **Default for most section layouts.**
+5. **ACF block** — anything beyond a pure pattern that needs structured editor fields (slider, team grid, testimonials carousel, logo grid with links, stats counters, hero with file/image/link fields). **Default custom-block choice in Chisel.** Use [create-acf-block](../../skills/chisel-create-acf-block/SKILL.md).
+6. **Custom WP (native React) block** — STOP AND ASK THE USER FIRST. Reserve for cases where ACF fields genuinely can't express what the editor canvas needs (in-canvas interactive state, drag-to-reorder, `<InnerBlocks>` composability where editors place arbitrary nested blocks, performance-critical server-render unsuitability). State the specific justification before proposing native React. Use [create-block](../../skills/chisel-create-block/SKILL.md) only after user approval.
 
 > **Editability note:** Patterns are fully editable in the WP editor — they're composed of native blocks. "Editable in admin" is not a reason to choose ACF block over pattern. Choose ACF block (rung 5) when content has structured fields the editor should fill via a form (single instance OR repeating with a fixed shape).
 >
@@ -77,14 +77,14 @@ Create a CPT when ALL three apply:
 
 When you do create one:
 
-- Use [create-cpt](../skills/create-cpt.md)
+- Use [create-cpt](../../skills/chisel-create-cpt/SKILL.md)
 - Default Gutenberg-enabled (`editor` in supports, `show_in_rest: true`)
 - ACF metaboxes only for WooCommerce products — never regular CPTs
 - Per-entry layout: block template (seed blocks) + custom/ACF blocks for unique sections
 
 ## Header / footer / global elements
 
-- Site-wide header/footer are Twig templates, not patterns. Use [adapt-header-footer](../skills/adapt-header-footer.md).
+- Site-wide header/footer are Twig templates, not patterns. Use [adapt-header-footer](../../skills/chisel-adapt-header-footer/SKILL.md).
 - Do NOT build header/footer as a block pattern unless user explicitly wants block-based site editing.
 
 ## Forms

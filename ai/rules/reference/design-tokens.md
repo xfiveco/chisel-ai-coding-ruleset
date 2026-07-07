@@ -2,7 +2,7 @@
 
 Chisel starter inventory and naming conventions. **Treat values below as the starter state — read `theme.json` for the project's current values before relying on any specific size/hex.** The protected slug names (palette + spacing aliases) are the only stable facts; everything else may have been adapted to the project's spec.
 
-See [skills/theme-json.md](../skills/theme-json.md) to modify.
+See [theme-json](../../skills/chisel-theme-json/SKILL.md) to modify.
 
 ## Colors
 
@@ -67,13 +67,13 @@ Slugs: `none`, `tight`, `loose`, `looser`. Read `theme.json` `settings.custom.le
 
 - Content width: `settings.layout.contentSize` (read `theme.json`) — narrowest, used by `core/group` default and most text-heavy patterns. SCSS: `get-layout-size('content')`.
 - Wide width: `settings.layout.wideSize` (read `theme.json`) — used by `alignwide` and broader patterns. SCSS: `get-layout-size('wide')`.
-- Other named widths (frame, container, narrow…): `settings.custom.layout.{name}` in `theme.json`. SCSS: `get-layout('{name}')`. Example: `settings.custom.layout.frame-width: "67rem"` for the 1072px header/footer frame → `max-width: get-layout('frame-width')`.
+- Other named widths (frame, container, narrow…): add `settings.custom.layout.{name}` in `theme.json` **and, in the same change, a matching accessor in `src/design/tools/_theme.scss`**. Example: `settings.custom.layout.frame-width: "67rem"` + a new accessor **you define** following the `get-{category}` convention — `get-layout($name)` returning `var(--wp--custom--layout--#{$name})` — then `max-width: get-layout('frame-width')`. **Never call a `get-*` helper that isn't defined in `src/design/tools/`** — undefined functions fail the build. Procedure: [coding-conventions.md "Tokenize repeated values"](coding-conventions.md#tokenize-repeated-values).
 
 ### Width-token decision ladder
 
 1. **Text content body** (narrowest) → `contentSize` via `get-layout-size('content')`.
 2. **Wide patterns** (grids, image bands) → `wideSize` via `get-layout-size('wide')`. Apply via `alignwide` className.
-3. **Anything else recurring** (header/footer frame, narrow CTA card, sidebar rail) → new `settings.custom.layout.{name}` slug + use `get-layout('{name}')`.
+3. **Anything else recurring** (header/footer frame, narrow CTA card, sidebar rail) → new `settings.custom.layout.{name}` slug + a matching accessor added to `src/design/tools/_theme.scss` (see the Layout note above).
 4. **Truly one-off, never repeated** → may stay as a raw `px-rem(…)` in pattern SCSS, but flag it: if a second pattern needs the same width, promote to a token.
 
 **Never hardcode `max-width: px-rem(N)` for a value that recurs.** Two patterns with the same hardcoded width = the token should already exist.
@@ -88,21 +88,21 @@ Slug: `primary-secondary`.
 
 ## Token extraction (procedure)
 
-For the per-mode procedure (Figma variable defs vs static asset / prompt parsing) and the apply-changes step order, see [skills/setup-theme-json.md](../skills/setup-theme-json.md). Reference only owns the _what_ (the inventory above and the constraints below).
+For the per-mode procedure (Figma variable defs vs static asset / prompt parsing) and the apply-changes step order, see [setup-theme-json](../../skills/chisel-setup-theme-json/SKILL.md). Reference only owns the _what_ (the inventory above and the constraints below).
 
 ## Spacing between blocks
 
 Default to a `core/spacer` between every two sibling inner blocks (even when Figma uses a uniform `gap`) — gives editors draggable handles. `blockGap` and CSS `gap` don't, and `blockGap` is inconsistent across layouts.
 
-This is for spacing _between_ siblings only. A section's own outer top/bottom band padding is NOT a spacer — set it as `style.spacing.padding` on the section's outer block (see [blocks.md "Root wrapper rule"](blocks.md#root-wrapper-rule)).
+This is for spacing _between_ siblings only, on the **vertical** axis. A section's own outer top/bottom band padding is NOT a spacer — set it as `style.spacing.padding` on the section's outer block (see [blocks.md "Root wrapper rule"](blocks.md#root-wrapper-rule)). Horizontal column/grid gutters aren't spacers either — use `core/columns` `blockGap` with a preset value (see [blocks.md "Spacing between sibling blocks"](blocks.md#spacing-between-sibling-blocks)).
 
 ### Picking the spacer style
 
 For each spacer, derive the slug from `theme.json` instead of hardcoding. This is the "match VALUES, never names" rule above, applied to spacers — the Figma gap's **resolved px** drives the choice, never the Figma token's name:
 
-1. Get the Figma spacing's **resolved value** via `get_variable_defs` (e.g. `48`), not the token name (Figma `large` may be 48px while Chisel `large` is 32px — see the HARD RULE above).
-2. Read the **rendered height of each spacer style** from `src/styles/blocks/_core-spacer.scss` — each `is-style-{alias}` sets `padding: get-margin('{alias}') 0`, so the spacer's rendered height = **2× that margin token** (e.g. `small` margin 12px → 24px tall; `medium` 24px → 48px; `large` 32px → 64px). The base `.wp-block-spacer` (no style class) is `padding: get-margin('normal') 0` → 48px.
-3. Pick the `is-style-{alias}` whose **rendered height** matches the Figma px (closest if no exact). Seed `"className": "is-style-{alias}"`.
+1. Get the Figma spacing's **resolved value** via `get_variable_defs` (e.g. `48`), not the token name (Figma `large` and Chisel `large` may resolve to different px — see the HARD RULE above).
+2. Compute the **rendered height of each spacer style**: each `is-style-{alias}` in `src/styles/blocks/_core-spacer.scss` sets `padding: get-margin('{alias}') 0`, so rendered height = **2× that margin alias's current value in `theme.json`** (if `small` resolves to 12px, the spacer renders 24px). The base `.wp-block-spacer` (no style class) uses `get-margin('normal')`. Always compute from the **current** `theme.json` `settings.custom.margin` values — never from remembered numbers; the scale is rewritten at project setup.
+3. Pick the `is-style-{alias}` whose **rendered height** matches the Figma px (closest if no exact). Seed `"className": "is-style-{alias}"`. **Every spacer carries an explicit `is-style-*` class — even when the default size is the right one.** A bare `wp-block-spacer` silently falls back to the base size and reads as an unmade decision, not a chosen one.
 
 **The `height` attribute is IGNORED — always seed `height:"auto"`.** `src/scripts/editor/mods/core-spacer.js` runs an `editor.BlockEdit` filter that force-sets every `core/spacer` to `height: "auto"` on load. So an inline `height:"32px"` is silently overwritten and the rendered size comes **only** from the `is-style-*` padding. Seeding a px height is dead markup that misleads — write `{"height":"auto","className":"is-style-{alias}"}` with `style="height:auto"` (matches [templates/pattern-markup.md](../templates/pattern-markup.md)).
 
@@ -110,13 +110,16 @@ If no alias's rendered height is close enough, extend the scale in `theme.json` 
 
 ### Margin sync at project start
 
-Chisel auto-adds bottom margins to text/media blocks via `.c-block--{name}` (in `src/styles/blocks/_core.scss`). These stack against spacers and cause double-gap unless synced:
+Chisel auto-adds block margins from **two sources** — sync BOTH, or they stack against spacers and cause double-gap:
+
+- **`src/styles/blocks/_core.scss`** — `.c-block--{name}` rules: text blocks get `margin: 0 0 get-margin('{alias}')`, media/container blocks get `margin: 0 auto get-margin('{alias}')`.
+- **`theme.json` `styles.blocks`** — `core/group`, `core/columns`, `core/image`, `core/gallery`, `core/cover`, `core/buttons` get top AND bottom `margin` from a `--wp--custom--margin--*` alias. These apply even where `_core.scss` doesn't.
+
+Procedure:
 
 1. Read Figma `text/*/paragraph-spacing` and `heading/*/paragraph-spacing` variables.
-2. Compare to current mixin defaults in `src/design/tools/`.
-3. Update each mixin's bottom margin to match Figma:
-   - Text blocks → `margin: 0 0 get-margin('{alias}')`
-   - Media/container blocks → `margin: 0 auto get-margin('{alias}')`
+2. Compare to the current values in **both** sources above (also `styles.elements.heading` `spacing.margin.bottom` in `theme.json`).
+3. Update each divergent margin to the matching alias — `_core.scss` rules keep their `0 0` / `0 auto` shorthand shape; `theme.json` entries change the alias only.
 
 ### Suppressing auto-margins in patterns
 

@@ -20,7 +20,7 @@ allowed-tools:
 
 ## Protected slugs
 
-Never rename: `primary`, `primary-300`, `foreground`, `background`, `white`, `black`, `grey-100/300/900`, `secondary`, `info`, `error`, `success`, `warning`, button styles (`is-style-primary` etc.), custom aliases (`margin.medium`, `gap.normal`, etc.). See [reference/design-tokens.md](../../rules/reference/design-tokens.md) for full list.
+Never rename protected slugs (full palette, spacing/margin/padding/gap aliases, button `is-style-*` names) — the canonical list is in [reference/design-tokens.md](../../rules/reference/design-tokens.md). Grep for references before renaming anything.
 
 ## Common modifications
 
@@ -139,16 +139,9 @@ Existing categories: `margin`, `padding`, `gap`, `border-radius`, `border-width`
 { "colors": ["{color1}", "{color2}"], "slug": "{slug}", "name": "{Display Name}" }
 ```
 
-## Current tokens summary
+## Current tokens
 
-- **Colors**: foreground, background, primary (+100-900), secondary (+100-900), black, white, grey 100-900, success/info/warning/error
-- **Fonts**: body (Roboto 300/700), headings (Manrope 700/800)
-- **Font sizes**: tiny, small, normal, medium, large, extra-large, very-large, big, huge (fluid)
-- **Spacing**: slugs 20-120 (0.25rem to 6rem), aliases tiny → section
-- **Line heights**: small 1.15, medium 1.25, normal 1.5, large 1.75
-- **Border radius**: tiny, little, small, normal, medium, large, full
-- **Transitions**: slow 0.5s, normal 0.3s, fast 0.1s
-- **Layout**: contentSize 1200px, wideSize 1440px
+Never rely on a documented token inventory — values and scales are rewritten at project setup. Read `theme.json` for the current state; slug semantics live in [reference/design-tokens.md](../../rules/reference/design-tokens.md).
 
 ## Guidelines
 

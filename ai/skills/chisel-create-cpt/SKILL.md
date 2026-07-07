@@ -108,7 +108,7 @@ When a CPT needs to appear on the homepage or other pages (latest N, manually-se
    - `count` (number): only shown when mode=latest (ACF conditional logic)
    - `selected_items` (relationship to CPT): only shown when mode=selected
    - Plus presentation fields (heading, closing text, CTA link)
-4. **Query inside filter hook** via `chisel_timber_acf_blocks_data_{slug}`. Add the handler to the existing `custom/app/WP/AcfBlocksData.php` class — **not** to `custom/functions.php` (see [CLAUDE.md "Architecture"](../../../CLAUDE.md#architecture-core-vs-custom)). Pattern follows the existing `case_studies()` and `team_members()` methods in that file:
+4. **Query inside filter hook** via `chisel_timber_acf_blocks_data_{slug}` (applied by `BlocksHelpers::acf_block_render` for every ACF block). Create `custom/app/WP/AcfBlocksData.php` — class `Chisel\WP\Custom\AcfBlocksData` with the `HooksSingleton` trait — if the project doesn't have it yet (the starter doesn't ship one), and register the filter in its `filter_hooks()` — **never in `custom/functions.php`** (see [CLAUDE.md "Architecture"](../../../CLAUDE.md#architecture-core-vs-custom)):
 
    ```php
    // custom/app/WP/AcfBlocksData.php
@@ -137,6 +137,6 @@ When a CPT needs to appear on the homepage or other pages (latest N, manually-se
    }
    ```
 
-   The class is already bootstrapped in `custom/functions.php` — no additional `get_instance()` call needed.
+   Bootstrap it once in `custom/functions.php`: `\Chisel\WP\Custom\AcfBlocksData::get_instance();` (skip if the line already exists).
 
 5. **Twig loops `posts`** (not `fields.items`). Use `post.thumbnail`, `post.title`, `post.excerpt`, `post.link` — no data duplication between homepage and archive.

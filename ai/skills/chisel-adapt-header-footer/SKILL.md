@@ -65,19 +65,7 @@ These are existing widget areas (see "Footer columns + copyright: widgets first"
 
 ### 3. Set up ACF Options (only for what widgets/menus/Customizer don't cover)
 
-For header CTA, social links, or footer content that genuinely can't be a widget — use [create-acf-options](../chisel-create-acf-options/SKILL.md) to register "Theme Settings" page with tabs (Header, Footer, Social, etc.). Add `options` to Timber context:
-
-```php
-// custom/app/WP/Site.php
-public function add_to_context( array $context ): array {
-    if ( function_exists( 'get_fields' ) ) {
-        $context['options'] = get_fields( 'option' );
-    }
-    return $context;
-}
-```
-
-Create the ACF field group JSON in `acf-json/group_{hash}.json`. Populate fields immediately via `xfive-acf-acf-field-update` with `post_id: "option"` — don't leave empty.
+For header CTA, social links, or footer content that genuinely can't be a widget — use [create-acf-options](../chisel-create-acf-options/SKILL.md): it owns the full procedure (register a "Theme Settings" page with tabs, add `options` to the Timber context in `custom/app/WP/Site.php`, create the field group JSON, populate immediately via `xfive-acf-acf-field-update` with `post_id: "option"` — never leave fields empty).
 
 ### 4. Edit Twig template
 
@@ -110,7 +98,7 @@ Use `xfive-menus-nav-menu-create` to create the menu and assign to location (`ch
 ### 7. Upload and set logo
 
 ```
-xfive-media-media-upload { file_url or local_path }
+xfive-images-image-upload { image_url or local_path }
 xfive-options-options-update { type: "theme_mod", entries: { "custom_logo": <id> } }
 ```
 

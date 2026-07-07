@@ -54,6 +54,13 @@ Block `blueprint-process` → prefix `bp`:
 }
 ```
 
+## Mechanical check (run before finishing any field group)
+
+1. Group `key` matches `group_[0-9a-f]{13}`; every field `key` matches `field_[0-9a-f]{13}`. Human-readable keys (`group_testimonial_fields`) are violations.
+2. Filename equals the group key exactly.
+3. **Every** field and sub-field `name` starts with the context prefix. Generic unprefixed names (`mode`, `count`, `heading`, `body`, `style`, `terms`) are violations even when they read fine in isolation — two blocks both shipping `mode` is exactly the WPML collision this rule prevents.
+4. Top-level `"modified"` is set to the current unix timestamp (Rule 4) — on creation and on every edit.
+
 ## Skills
 
 - Block field group → [create-acf-block skill](../../skills/chisel-create-acf-block/SKILL.md)

@@ -29,29 +29,31 @@ Any Gutenberg content insertion goes through MCP:
 
 ## Available tools
 
-| Category             | Tools                                                                                                  |
-| -------------------- | ------------------------------------------------------------------------------------------------------ |
-| Posts                | `post-by-title`, `post-get-content`, `post-create`, `post-update`, `post-update-content`, `post-trash` |
-| Blocks               | `block-tree` (read), `block-schema` (read)                                                             |
-| Media                | `media-upload`, `media-migrate`                                                                        |
-| Menus                | `nav-menu-create`                                                                                      |
-| ACF                  | `acf-field-update`                                                                                     |
-| Options & theme mods | `options-update`                                                                                       |
+| Category             | Tools                                                                                                                   |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Posts                | `post-by-title`, `post-get-content`, `post-get-meta`, `post-create`, `post-update`, `post-update-content`, `post-trash` |
+| Blocks               | `block-tree` (read), `block-schema` (read)                                                                              |
+| Media                | `image-upload`, `media-migrate`                                                                                         |
+| Menus                | `nav-menu-list`, `nav-menu-create`                                                                                      |
+| ACF                  | `acf-field-get`, `acf-field-update`                                                                                     |
+| Terms                | `term-list`, `term-create`, `term-update`, `term-delete`                                                                |
+| Widgets              | `widgets-list`, `widget-add`, `widget-update`, `widget-remove`                                                          |
+| Options & theme mods | `options-update`                                                                                                        |
 
 ## Workflow for inserting content
 
 1. **Find or create the post**: `post-by-title` to look up, `post-create` to make new.
 2. **Check existing structure** (if editing): `post-get-content` or `block-tree`.
 3. **Validate block attributes** before writing markup: `block-schema` on each block type. Catches typos/wrong types. Wrong attributes are silently ignored.
-4. **Upload images** via `media-upload` as part of each section build (not deferred). Capture attachment IDs/URLs. If URL returns wrong content-type (e.g. Figma asset URLs), download locally to a temp folder outside the theme (e.g. system temp, or a project-level `_tmp/` directory) then upload via `local_path`.
+4. **Upload images** via `xfive-images-image-upload` as part of each section build (not deferred). Capture attachment IDs/URLs. If URL returns wrong content-type (e.g. Figma asset URLs), download locally to a temp folder outside the theme (e.g. system temp, or a project-level `_tmp/` directory) then upload via `local_path`.
 5. **Generate block markup** as serialized WordPress block grammar. Use preset classes (`has-primary-color`, `is-style-primary`, `has-large-font-size`).
-6. **Write content**: ALWAYS via `post-update-content` with `mode:"replace"` and the **full serialized markup of the entire post**. To add a section, fetch current with `post-get-content`, concatenate the new section onto the full existing markup, write the whole thing back. (No partial-block tools — they were removed because index-based mutation was fragile.)
-   - **⚠️ NEVER use `mode:"append"` (or rely on it appending).** On this project's `xfive-mcp` plugin it **REPLACES the whole post** — using it to add one section silently wipes every prior section. Confirmed twice. Always do get → concat-onto-full → `mode:"replace"`.
+6. **Write content**: ALWAYS via `post-update-content` with the **full serialized markup of the entire post**. The tool takes only `post_id` + `content` and **completely replaces `post_content` on every call** — there is no append or partial mode (partial-block tools were removed because index-based mutation was fragile).
+   - **⚠️ To add a section**: fetch current with `post-get-content`, concatenate the new section onto the full existing markup, write the whole thing back. Sending only the new section silently wipes every prior section — confirmed twice in practice. Always get → concat-onto-full → write.
 7. **Verify**: after every write, run `block-tree` and **count ALL top-level sections** against what should be there. A `block-tree` taken after a destructive write returns only the surviving block(s) — which falsely reads as a clean parse. Then user reloads in browser.
 
 ## Post creation defaults
 
-- **Always create pages as `publish`** (not draft) so user can preview immediately.
+- **Always pass `post_status: "publish"` explicitly** when creating pages — the tool defaults to `draft`, and the user should be able to preview immediately.
 - **Set homepage** after creating Home page:
   ```
   xfive-options-options-update {
@@ -82,7 +84,7 @@ xfive-options-options-update {
 
 Common use cases:
 
-- **Site logo**: upload via `media-upload` → set `custom_logo` theme mod to attachment ID
+- **Site logo**: upload via `xfive-images-image-upload` → set `custom_logo` theme mod to attachment ID
 - **Front page**: `type: "option"`, `entries: { "show_on_front": "page", "page_on_front": {id} }`
 - **Nav menu locations**: `type: "theme_mod"`, `entries: { "nav_menu_locations": { "chisel_main_nav": 3 } }`
 
@@ -94,7 +96,7 @@ Common use cases:
 
 ## Nav menus
 
-`nav-menu-create` may append items to an existing menu with the same name. Check first if the menu already exists to avoid duplicates.
+`nav-menu-create` may append items to an existing menu with the same name. Check first via `nav-menu-list` to avoid duplicates.
 
 ## Silent-failure traps (block seeding)
 
@@ -104,8 +106,9 @@ These cause "Block validation failed" or wrong markup the agent won't catch on i
 - **Static vs dynamic seed shape (check `renderMode` in the schema response).** Static (`renderMode: "static"`, client `save()` returns JSX) MUST be paired tags with rendered inner HTML: `<!-- wp:name {attrs} -->INNER<!-- /wp:name -->`. Dynamic (`renderMode: "dynamic"`, server `render_callback`, including ACF blocks) may self-close: `<!-- wp:name {attrs} /-->`. Self-closing a static block stores empty inner HTML; the editor re-runs `save()`, sees a diff, shows "Block validation failed".
 - **`seedAs` is necessary but not sufficient.** When attributes change `save()` output (image `width`/`height`/`sizeSlug`, button URL/className, heading `level`, group `tagName`/`layout`, etc.) → always paired tags with fully-rendered inner HTML, even if schema says self-closing is OK. When in doubt, use paired tags.
 - **`useBlockProps.save({className})` auto-prefixes `wp-block-{namespace}-{name}`** onto the wrapper element. Read the block's `save.js` and include the auto-prefix in hand-written seed markup.
-- **No whitespace inside containers wrapping `<InnerBlocks.Content />`.** Pretty-printing seeded HTML triggers "Block validation failed". Inline the inner-block comments tightly: `<div class="b-foo__content"><!-- wp:paragraph --><p>...</p><!-- /wp:paragraph --></div>`.
+- **No whitespace inside containers wrapping `<InnerBlocks.Content />` — custom/chisel static blocks only.** A hand-written `save()` renders the container with zero whitespace, so pretty-printing the seeded HTML triggers "Block validation failed". Inline the inner-block comments tightly: `<div class="b-foo__content"><!-- wp:paragraph --><p>...</p><!-- /wp:paragraph --></div>`. Core container blocks (`group`, `cover`, `media-text`, `columns`) tolerate pretty-printed inner markup — the [pattern-markup.md](../templates/pattern-markup.md) templates are valid as shown.
+- **`core/cover` overlays use `"overlayColor":"{slug}"` — never `customOverlayColor` with a raw hex.** Custom hex bypasses the palette (untokenized color drift the raw-value audit can't trace back). If the design's overlay color has no palette slug, add the token to theme.json first, then reference the slug.
 - **`core/group` with both `backgroundColor` AND `textColor` requires `has-background`** on the rendered `<div>` — in addition to `has-background-color has-{slug}-background-color has-text-color`. Missing it = "Block validation failed" on save. Full saved class list: `has-background-color has-{slug}-background-color has-text-color has-background`. (When only one of the two is set, omit `has-background`.)
 - **`post-update-content` un-escapes one backslash level.** ACF block `data` containing `\r\n` / `\t` (multi-line textarea / WYSIWYG fields) must be **double-escaped** (`\\r\\n`, `\\t`) in the content you send, or the escape sequence is stripped to its bare letters and corrupts the field. Re-fetch and verify any field carrying newlines/tabs after writing.
 - **When unsure: round-trip.** Insert one instance in the editor manually, save, `xfive-posts-post-get-content`, copy that exact markup. The block's own `save()` is ground truth.
-- Pages created with `post_status: "publish"` (not draft) for immediate preview. New ACF block → pause, user builds, schema-check passes, then seed (schema fails until `npm run build-scripts` runs).
+- Pages created with an explicit `post_status: "publish"` (the tool defaults to draft) for immediate preview. New ACF block → pause, user builds, schema-check passes, then seed (schema fails until `npm run build-scripts` runs).

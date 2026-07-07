@@ -40,6 +40,8 @@ WordPress block grammar for common pattern building blocks. Copy and adapt. Alwa
 <!-- /wp:cover -->
 ```
 
+**Cover overlays: preset slug only** — always `"overlayColor":"{slug}"`; never `customOverlayColor` with a raw hex. No matching palette slug? Add the token to theme.json first.
+
 ## Text
 
 **Heading (levels 1-6):**
@@ -83,9 +85,11 @@ WordPress block grammar for common pattern building blocks. Copy and adapt. Alwa
 <!-- /wp:spacer -->
 ```
 
-Available `is-style-*` sizes come from `registerSpacerStyles()` in `src/scripts/editor/blocks-styles.js` — read it for the current list. The Figma px → style mapping is in [reference/design-tokens.md "Spacing between blocks"](../reference/design-tokens.md#spacing-between-blocks).
+Available `is-style-*` sizes come from `registerSpacerStyles()` in `src/scripts/editor/blocks-styles.js` — read it for the current list. The Figma px → style mapping is in [reference/design-tokens.md "Spacing between blocks"](../reference/design-tokens.md#spacing-between-blocks). **Every spacer must carry an explicit `is-style-*` class — never seed a bare `{"height":"auto"}` spacer**, even when the default size is intended.
 
 ## Media
+
+Two surfaces, two image sources: **seeded pages** (written via MCP) use attachment IDs + upload URLs from `xfive-images-image-upload`, as below. **Pattern source files** (`patterns/*.php`) must instead reference theme-shipped placeholders (`get_stylesheet_directory_uri()` + `assets/images/placeholders/…`, no `id` attr) — attachment IDs don't exist on other installs, and `src=""` ships a broken pattern. See create-pattern guideline 9.
 
 **Image (with attachment ID):**
 
@@ -158,6 +162,8 @@ Available `is-style-*` sizes come from `registerSpacerStyles()` in `src/scripts/
 
 Full hero section with overlay color, top/bottom spacers, centered headline, lead paragraph, and CTA pair. Adjust `overlayColor`, `contentSize`/`wideSize`, spacer sizes, and copy.
 
+> **Raw px in `layout` attrs is the one sanctioned exception** to the no-hardcoded-widths rule — Gutenberg layout attributes cannot reference theme.json presets. Prefer omitting `contentSize`/`wideSize` so the block inherits the global sizes; set explicit px only when the section genuinely differs. In SCSS the rule stands: widths go through tokens ([design-tokens.md "Width-token decision ladder"](../reference/design-tokens.md#width-token-decision-ladder)).
+
 ```html
 <!-- wp:cover {"overlayColor":"foreground","isUserOverlayColor":true,"align":"full","disableBottomMargin":true,"className":"u-no-margin-bottom","layout":{"type":"constrained","contentSize":"848px","wideSize":"1072px"}} -->
 <div class="wp-block-cover alignfull u-no-margin-bottom">
@@ -208,7 +214,7 @@ Full hero section with overlay color, top/bottom spacers, centered headline, lea
 
 ### Media + text (image on the left or right)
 
-Use `core/media-text` for image-beside-content sections (feature rows). Image left is default; add `"mediaPosition":"right"` to flip. `mediaId` is the attachment ID returned by `xfive-media-media-upload`.
+Use `core/media-text` for image-beside-content sections (feature rows). Image left is default; add `"mediaPosition":"right"` to flip. `mediaId` is the attachment ID returned by `xfive-images-image-upload`.
 
 **Image left:**
 
@@ -281,7 +287,7 @@ For sections that pull live content (blog feed, latest case studies hardcoded on
 <!-- /wp:group -->
 ```
 
-For CPT feeds (case studies, team), set `"postType":"case-study"` (etc.). For "manually selected N items" use a custom CPT-driven block instead — see [skills/create-cpt.md](../skills/create-cpt.md) "Pair with a custom block".
+For CPT feeds (case studies, team), set `"postType":"case-study"` (etc.). For "manually selected N items" use a custom CPT-driven block instead — see [create-cpt](../../skills/chisel-create-cpt/SKILL.md) "Pair with a custom block".
 
 ## Custom blocks in patterns
 

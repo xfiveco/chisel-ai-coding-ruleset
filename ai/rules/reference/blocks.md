@@ -63,7 +63,7 @@ view.scss               # frontend-only CSS (viewStyle) — imported by view.js.
 acf-json/*.json         # ACF field group
 ```
 
-See [skills/create-acf-block.md](../skills/create-acf-block.md) for the full procedure and required block.json keys — always load it before scaffolding a new ACF block. For custom WP blocks see [skills/create-block.md](../skills/create-block.md).
+See [create-acf-block](../../skills/chisel-create-acf-block/SKILL.md) for the full procedure and required block.json keys — always load it before scaffolding a new ACF block. For custom WP blocks see [create-block](../../skills/chisel-create-block/SKILL.md).
 
 **ACF field group naming (HARD RULE).** Keys must be hex hashes, filename = group key, field `name`s must be namespace-prefixed (block initials → `bp_heading`), `label`s stay human. Full spec, prefix-derivation cases, per-context prefix sources, and example: **[acf-naming.md](acf-naming.md)** — the canonical, all-context rule. Read it before authoring any field group JSON.
 
@@ -132,9 +132,11 @@ Every pattern has a single root `core/group` (or `core/cover`) with class `p-{sl
 
 The root wrapper also carries `"metadata":{"name":"{Pattern Title}"}` (per pattern — its human Title, matching the `Title:` header) so it shows a readable label in the editor List View instead of a generic "Group".
 
+**Four-way sync (HARD RULE).** The pattern slug drives four names that must always match: the `Slug:` header suffix (`chisel/{slug}`), the pattern filename (`patterns/{slug}.php`), the root class (`p-{slug}`), and the SCSS file + scope (`src/styles/patterns/_{slug}.scss` scoped under `.p-{slug}`). Derive the slug from the section's **function** — never from the page the section was built for. (`p-home-hero` on a `hero-image-cta` pattern is the canonical failure: the class stops matching the slug, and when a second page reuses the section, two pattern files style the same page-named class and their SCSS collides.) Renaming a pattern renames all four in the same change. Never let two pattern files share one `p-*` class base.
+
 **Section vertical padding lives on the outer block, not in pattern SCSS.** Set the section's top/bottom band padding as `style.spacing.padding` (`var:preset|spacing|NN` preset) on the root `core/group` — both `core/group` and `core/columns` support `spacing.padding`, so a columns-rooted section can carry it directly. Reserve pattern SCSS for inner/structural spacing the block can't express.
 
-Pattern SCSS: `src/styles/patterns/_{slug}.scss`, scoped under `.p-{slug}` (file unprefixed, CSS class keeps `p-`).
+Pattern SCSS: `src/styles/patterns/_{slug}.scss`, scoped under `.p-{slug}`. Filenames never carry the `p-` prefix — the `patterns/` folder already provides the context (same as `patterns/{slug}.php`); the prefix belongs only to the CSS class, per BEM.
 
 **Class only the root; target inner blocks by tag (HARD RULE).** Only the root group carries `p-{slug}`. **Never** add a BEM `__element` class to leaf/text blocks (paragraph, heading, list, image) — style them by tag from the root: `.p-{slug} h2`, `.p-{slug} p`, or by the block's own class `.p-{slug} .wp-block-media-text`. A `p-{slug}__heading` class lives only on the seeded instance, so a paragraph an editor adds later inherits nothing. Add a `p-{slug}__{name}` class to a **structural** block (inner group, columns, media-text) **only when** tag/descendant targeting can't single it out (e.g. two sibling inner groups needing different styles) — never to text elements.
 
@@ -152,13 +154,14 @@ In `src/scripts/editor/mods/` (registered via `blocks-mods.js`). Several add cus
 - **core.js**: adds a `disableBottomMargin` attr (toggle) to every `core/*` + `chisel/*` block. **The attr alone renders nothing** — the bottom-margin removal is done by the `u-no-margin-bottom` utility class. When seeding, set BOTH `"disableBottomMargin":true` AND `"className":"… u-no-margin-bottom"` (and include `u-no-margin-bottom` in the rendered class list). Needed on any block immediately followed by a spacer or the last child of a container (else base margin + spacer = double gap).
 - **core-button.js**: adds `buttonSize`, `buttonIcon`, `buttonIconPosition` attrs to `core/button`, kept in sync with classes `is-size-{size}`, `has-icon has-icon-{name}`, `has-icon-left`. **When seeding a button icon/size, set the attr AND the class:** e.g. `{"buttonIcon":"arrow-right","className":"… has-icon has-icon-arrow-right"}`. Class-only works visually but the editor control shows empty and a later edit can wipe it. Icon `{name}` must be in `$static-icons`.
 - **blocks-alignment.js**: on select, force-sets a default `align` per block from the PHP-provided `chiselEditorScripts.blocksDefaultAlignment` map. A seeded `align` on those blocks may be overwritten when the user selects the block — check the map (or just rely on it) rather than fighting it.
-- **core-spacer.js**: forces every `core/spacer` to `height:"auto"` in the editor — spacer size comes ONLY from the `is-style-{size}` padding, never the `height` attr. Always seed `{"height":"auto","className":"is-style-{size}"}`. See [design-tokens.md "Picking the spacer style"](design-tokens.md#picking-the-spacer-style).
+- **core-spacer.js**: forces every `core/spacer` to `height:"auto"` in the editor — spacer size comes ONLY from the `is-style-{size}` padding, never the `height` attr. Always seed `{"height":"auto","className":"is-style-{size}"}` — the style class is mandatory on every spacer, even for the default size (no bare spacers). See [design-tokens.md "Picking the spacer style"](design-tokens.md#picking-the-spacer-style).
 
 ## Spacing between sibling blocks
 
 Composition rule (the spacer _sizing_ math — px→style mapping, margin-sync, flex double-gap trap — lives in [design-tokens.md "Spacing between blocks"](design-tokens.md#spacing-between-blocks)):
 
-- **Default a `core/spacer` between every two sibling inner blocks** — even when Figma uses a uniform `gap`. Editors need draggable handles; `blockGap` and CSS `gap` give none and are invisible to the editor. NEVER use `blockGap` or CSS `gap` in pattern SCSS for sibling spacing. One-off margins or section padding in pattern SCSS are fine.
+- **Default a `core/spacer` between every two sibling inner blocks** — even when Figma uses a uniform `gap`. Editors need draggable handles; `blockGap` and CSS `gap` give none and are invisible to the editor. NEVER use `blockGap` or CSS `gap` in pattern SCSS for **vertical** sibling spacing. One-off margins or section padding in pattern SCSS are fine.
+- **Horizontal gutters are the exception**: gaps between columns in `core/columns` (or a grid) can't be spacers — set them ON the block via `blockGap` with a preset value (`"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|{N}"}}}`). That's the correct, token-backed tool for the horizontal axis.
 - **Walk the markup BEFORE serializing.** For every adjacent sibling pair, if the design shows space, insert a spacer — do this while writing, not after.
 - Pair with the `disableBottomMargin` + `u-no-margin-bottom` rule above (every block immediately followed by a spacer, and every last child of a container) or base margin + spacer = double gap.
 

@@ -67,6 +67,7 @@ Mapping rule: variant maps to `is-style-{variant}` (Gutenberg button block) or `
 | Block                                                                                                   | File                                      | What lives here                                                       |
 | ------------------------------------------------------------------------------------------------------- | ----------------------------------------- | --------------------------------------------------------------------- |
 | Global block margins (all blocks)                                                                       | `src/styles/blocks/_core.scss`            | `.c-block--{name}` bottom margins for text and media/container blocks |
+| Block margins, second source (group, columns, image, gallery, cover, buttons)                           | `theme.json` → `styles.blocks`            | Top+bottom `margin` aliases per core block — sync alongside `_core.scss` (see [design-tokens.md "Margin sync"](../../rules/reference/design-tokens.md#margin-sync-at-project-start)) |
 | `core/group`                                                                                            | `src/styles/blocks/_core-group.scss`      | Group wrapper styles                                                  |
 | `core/button`                                                                                           | `src/styles/blocks/_core-button.scss`     | Button block defaults                                                 |
 | `core/spacer`                                                                                           | `src/styles/blocks/_core-spacer.scss`     | Spacer `is-style-*` padding values                                    |
@@ -124,7 +125,7 @@ Chisel has a built-in icon system. Icons ship as SVG source files and are compil
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Source SVGs                                   | `assets/icons-source/{name}.svg` — drop new ones here                                                         |
 | Static icons list (used by `@mixin icon-svg`) | `src/design/settings/_index.scss` → `$static-icons: ('minus', 'plus', 'arrow-right', 'arrow-left', 'search')` |
-| Editor-visible icon names                     | `core/WP/Assets.php` → look for the `'arrow-right' => __('Arrow Right', ...)` list                            |
+| Editor-visible icon names                     | `chisel_editor_scripts` filter in `custom/app/WP/Assets.php` — extend `['editor']['localize']['data']['icons']` (defaults live in `core/WP/Assets.php` — read-only, never edit)  |
 | Button usage (right)                          | `"className":"has-icon has-icon-{name}","buttonIcon":"{name}"`                                                |
 | Button usage (left)                           | add `has-icon-left` to className                                                                              |
 | Button usage (with vertical separator)        | add `has-icon-separator` to className                                                                         |
@@ -135,7 +136,7 @@ Chisel has a built-in icon system. Icons ship as SVG source files and are compil
 1. Export the icon as a single-color SVG with `fill="currentColor"` (or no fill — gets masked).
 2. Save as `assets/icons-source/{kebab-case-name}.svg`.
 3. Add the name to `$static-icons` tuple in `src/design/settings/_index.scss`.
-4. Add the name → label mapping in `core/WP/Assets.php` (editor UI).
+4. Add the name → label mapping via the `chisel_editor_scripts` filter in `custom/app/WP/Assets.php`: `$data['editor']['localize']['data']['icons']['{name}'] = __( '{Label}', 'chisel' );` (same filter shape as the `blocksDefaultAlignment` example in [create-acf-block](../chisel-create-acf-block/SKILL.md#default-alignment)) — **never edit `core/WP/Assets.php`**.
 5. Use via `has-icon has-icon-{name}` + `buttonIcon` attribute.
 
 Don't inline SVG in Twig/patterns when a registered icon would do — single source of truth.

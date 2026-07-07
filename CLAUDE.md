@@ -12,7 +12,7 @@ The spec can come from different sources. Pick the mode that fits the task:
 - **Static-asset mode** — user provides screenshots, PDFs, or written design notes (no live Figma). Skip the figma-specific skills; use [chisel-adapt-base-styles](ai/skills/chisel-adapt-base-styles/SKILL.md), [chisel-create-pattern](ai/skills/chisel-create-pattern/SKILL.md), etc. directly.
 - **Prompt mode** — user just describes features in chat ("add a contact CPT", "build a pricing pattern", "extend the button block"). Pick the matching skill from the table below. No orchestrator.
 
-In every mode, the same skills/reference files apply — Figma is only one possible input. **Always create progress files via the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md) before starting work** (under `ai-progress/` — a roadmap + phase files for a multi-phase effort, or a single `task-{slug}.md` for one-off work), unless the user explicitly says to skip it. Mode doesn't change this — even a prompt-mode "add one block" gets a `task-` file. It's cheap; reconstructing context after `/compact` or a new session isn't.
+In every mode, the same skills/reference files apply — Figma is only one possible input. Progress files are mandatory in all modes — see "Progress tracking" below.
 
 ## Identity
 
@@ -75,9 +75,7 @@ Entry points:
 
 ### Progress tracking
 
-**Always create progress files before starting work**, under an `ai-progress/` folder at the theme root (the directory containing `CLAUDE.md`, `functions.php`, `theme.json`), and commit them to the repo. They are the source of truth — surviving `/compact`, new sessions, and dev handoffs. The only exception is when the user explicitly says to skip it.
-
-**Format + procedure are owned by the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md).** Layout: `ai-progress/INDEX.md` (router, read first) → one `{effort-slug}-ROADMAP.md` per multi-phase effort (Source + Scope + phase table + session log) → `{effort-slug}/phase-NN-{slug}.md` per expanded phase; standalone one-off work → `ai-progress/task-{slug}.md`. **One roadmap per effort/goal, never one monolithic file and never mixed modes.** Roadmap rows are status + one-line outcome + link only; the expanded plan lives in the phase file — so a new session reads the index + roadmap and opens only the phase it's resuming. Read the skill before creating or updating any progress file.
+**Always create progress files before starting work** under `ai-progress/` at the theme root, and commit them — they are the source of truth across `/compact`, new sessions, and dev handoffs. Only exception: the user explicitly says to skip. **Format, layout, and procedure are owned by the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md) — read it before creating or updating any progress file.** New sessions read `ai-progress/INDEX.md` first.
 
 **Per-phase plan-review gate (HARD RULE).** When starting a phase, first flip its roadmap row to `[~]` and author the phase file (`{effort-slug}/phase-NN-{slug}.md`) with the implementation detail (what you'll do, files/blocks/tokens touched, mapping decisions) — then **pause for the user to review that phase's plan before building.** The user may request changes; apply them to the plan before implementing, not after. Build only on explicit go-ahead. The post-build summary pause still applies. So each phase has two stops: plan-review (before) and summary (after).
 
@@ -98,11 +96,11 @@ For any content insert/edit, image upload, ACF field, theme mod, option, nav men
 
 Page title display (ACF `page_title_display`): `hide` (hero contains its own H1), `hide-visually` (custom visual but H1 needed for SEO), `show` (default — design shows a page title heading).
 
-**Before hand-writing any block markup, read [mcp-workflow.md "Silent-failure traps"](ai/rules/reference/mcp-workflow.md#silent-failure-traps-block-seeding).** Seeding has several traps that cause "Block validation failed" or wrong markup the agent won't catch (schema-before-every-block, `renderMode` seed shape, `useBlockProps` auto-prefix, `InnerBlocks` whitespace, `core/group` `has-background`, round-trip-when-unsure). Pages created `publish` (not draft); new ACF block → pause for user to build, schema-check, then seed.
+**Before hand-writing any block markup, read [mcp-workflow.md "Silent-failure traps"](ai/rules/reference/mcp-workflow.md#silent-failure-traps-block-seeding).** Seeding has several traps that cause "Block validation failed" or wrong markup the agent won't catch (schema-before-every-block, `renderMode` seed shape, `useBlockProps` auto-prefix, `InnerBlocks` whitespace, `core/group` `has-background`, round-trip-when-unsure). Pages created with explicit `post_status: "publish"` (tool defaults to draft); new ACF block → pause for user to build, schema-check, then seed.
 
 ### Spacing between blocks
 
-- **Default a `core/spacer` between every two sibling inner blocks** (even when Figma uses a uniform `gap`) — editors need draggable handles; never `blockGap`/CSS `gap` for sibling spacing.
+- **Default a `core/spacer` between every two sibling inner blocks** (even when Figma uses a uniform `gap`) — editors need draggable handles; never `blockGap`/CSS `gap` for **vertical** sibling spacing. Horizontal column/grid gutters are the opposite: `core/columns` `blockGap` with a preset value is the correct tool there (spacers can't express horizontal gaps).
 
 Composition rule + `disableBottomMargin` pairing → [blocks.md "Spacing between sibling blocks"](ai/rules/reference/blocks.md#spacing-between-sibling-blocks). Spacer-size selection (px→style math), flex double-gap trap, auto-margin sync → [design-tokens.md "Spacing between blocks"](ai/rules/reference/design-tokens.md#spacing-between-blocks).
 
@@ -113,7 +111,7 @@ Composition rule + `disableBottomMargin` pairing → [blocks.md "Spacing between
 
 ### SCSS
 
-- Always `@use '~design' as *;` at top of every SCSS file. Use design helpers (`get-color`, `get-gap`, `get-font-size`, `get-layout`, etc.) — never raw `var(--wp--*)` custom properties or raw hex/px for tokenized values.
+- Always `@use '~design' as *;` at top of every SCSS file. Use design helpers (`get-color`, `get-gap`, `get-font-size`, `get-layout-size`, etc.) — never raw `var(--wp--*)` custom properties or raw hex/px for tokenized values, and never a `get-*` helper that isn't defined in `src/design/tools/`.
 - **Don't duplicate global styles (HARD RULE).** theme.json (`styles.typography`, `styles.elements.hN`, `settings.custom.*`) and base mixins cascade to every block, pattern, and component — never re-declare a value they already set (e.g. an element/heading `line-height`). If a value should be global, add it to theme.json instead of repeating it per-selector. Applies theme-wide, not just patterns. Full rule → [reference/coding-conventions.md "Don't duplicate global styles"](ai/rules/reference/coding-conventions.md#dont-duplicate-global-styles-hard-rule).
 - **Tokenize repeated values** — any repeated dimension (width, padding step, color, shadow, radius, transition) belongs in `theme.json` + a `get-*` helper, never a hardcoded `px-rem(…)`/hex. One-off non-repeating values only may stay raw.
 - **Asset URLs in SCSS go through the `background-image()` mixin** — never raw `url('../../assets/...')` (silently breaks the webpack build).
@@ -124,29 +122,11 @@ Asset-URL mixin mechanics (`$is-block`, `assets/images/` placement), tokenize-or
 
 ### Block type preference: ACF default, native React = stop and ask (HARD RULE)
 
-When the decision ladder reaches a custom block (i.e., pattern/block-style/block-mod can't cover the need), **prefer ACF blocks over native React blocks** — by default. ACF blocks are server-rendered Twig, fit Chisel's stack 1:1 (Timber already loaded), avoid the native-block silent-failure traps (`save()` validation, static-vs-dynamic seed shape, `useBlockProps.save` auto-prefix, whitespace-in-InnerBlocks), and give editors a clean field form.
-
-**Native React block requires you to STOP and ask the user first.** Don't silently choose native. When you propose native, state the specific justification:
-
-- Editor needs interactive UI that ACF fields can't express (true in-canvas state, drag-to-reorder, complex composability with `<InnerBlocks>` where editors place arbitrary nested blocks).
-- Editor needs a live preview that depends on JS evaluation (rare).
-- Performance-critical block where server rendering on every page view is wrong (very rare).
-
-Slider that's only interactive on the frontend? ACF block + Swiper frontend. Tabs that just toggle visibility? Still ACF — frontend JS handles toggling. Reserve native React for cases where the **editor canvas** itself needs the interactivity.
-
-Full decision ladder + exceptions: [ai/rules/reference/section-mapping-decisions.md "Block decision ladder"](ai/rules/reference/section-mapping-decisions.md#block-decision-ladder).
+When the decision ladder reaches a custom block, **default to ACF** (server-rendered Twig, fits the stack, avoids native seed traps). **Native React requires you to STOP and ask the user first**, with a specific justification: editor-canvas interactivity ACF can't express (in-canvas state, drag-to-reorder, true `<InnerBlocks>` composability), or a rare perf need that rules out server rendering. Frontend-only interactivity (slider, tabs, accordion) is NOT a justification — that's an ACF block + frontend JS. Full ladder + exceptions: [section-mapping-decisions.md "Block decision ladder"](ai/rules/reference/section-mapping-decisions.md#block-decision-ladder).
 
 ### Content vs CSS (HARD RULE)
 
-**Don't hide content with CSS to paper over unwanted markup.** If the editor or seeded content has something the design doesn't want (starter widgets, default posts, demo blocks, placeholder fields), **remove it at the source** — via MCP (`xfive-widgets-widget-remove`, `xfive-posts-post-trash`, `xfive-acf-acf-field-update` clearing the value), via Appearance > Widgets, or by asking the user how to handle it.
-
-`display: none` / `visibility: hidden` are reserved for:
-
-- A11y-only visibility (`u-sr-only` text for screen readers).
-- State-driven UI that the user genuinely toggles (mobile nav, accordion content, tab panels).
-- Hiding empty containers via Twig logic (e.g. `{% if column|trim is not empty %}`) — not the same as CSS-hiding non-empty unwanted content.
-
-Anything else (hiding the default "Hello World" post, hiding a starter widget you don't want, hiding a Gutenberg block you accidentally created) — fix the data, not the presentation. When in doubt, ask.
+**Don't hide unwanted content with CSS — remove it at the source** (MCP `widget-remove` / `post-trash` / `acf-field-update`, or ask the user). `display: none` / `visibility: hidden` are reserved for a11y-only text (`u-sr-only`), state-driven UI the user toggles (mobile nav, accordion, tabs), and Twig-side empty-container checks. Anything else (default "Hello World" post, starter widget, accidental block) — fix the data, not the presentation. When in doubt, ask.
 
 ### Design tokens (theme.json)
 
@@ -161,7 +141,7 @@ Anything else (hiding the default "Hello World" post, hiding a starter widget yo
 - **Ask the user to run `npm run build-scripts`** to verify SCSS compiles — don't invoke it yourself.
 - Every `get-color('...')` reference must exist in theme.json palette.
 - Every `has-*-color` / `has-*-font-size` class in patterns must exist in theme.json presets.
-- Pattern root wrapper has `p-{slug}` class; SCSS file matches.
+- Pattern four-way sync: `Slug:` header, filename, root `p-{slug}` class, and SCSS file/scope all match — see [blocks.md "Root wrapper rule"](ai/rules/reference/blocks.md#root-wrapper-rule).
 
 ## Reference, skills, templates
 
@@ -169,7 +149,7 @@ All guidance lives under [`ai/`](ai/). Old content is archived in `agent/` (refe
 
 ### Reference (the "what" — load BEFORE the matching skill)
 
-Reference docs own descriptive facts (file structures, decision ladders, token inventory, load-bearing constraints). Each reference doc routes you to the matching skill at the bottom. **For scaffolding tasks, always open reference first** — pattern-matching off sibling files in the repo misses required keys, build-pipeline rules, and other invariants.
+Reference owns descriptive facts and routes to the matching skill at the bottom (see the "Scaffolding" hard rule above).
 
 - [file-locations](ai/rules/reference/file-locations.md) — where things go
 - [design-tokens](ai/rules/reference/design-tokens.md) — token inventory + protected slugs → routes to `setup-theme-json` / `theme-json`
@@ -178,7 +158,7 @@ Reference docs own descriptive facts (file structures, decision ladders, token i
 - [acf-wpml-translation](ai/rules/reference/acf-wpml-translation.md) — per-field WPML translation preferences (`wpml_cf_preferences` enum, Expert mode, per-type preset table) for ALL field groups
 - [section-mapping-decisions](ai/rules/reference/section-mapping-decisions.md) — decision ladder + quick-pick table → routes to the right scaffolding skill
 - [screen-build-order](ai/rules/reference/screen-build-order.md) — phase order + verification checklist
-- [figma-import-template](ai/rules/reference/figma-import-template.md) / [progress-template](ai/rules/reference/progress-template.md) — thin pointers; format + procedure live in the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md)
+- [progress-template](ai/rules/reference/progress-template.md) — thin pointer for all modes; format + procedure live in the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md)
 - [mcp-workflow](ai/rules/reference/mcp-workflow.md) — MCP tool usage (posts, blocks, media, ACF, terms, menus, options, widgets, content, theme mods)
 - [coding-conventions](ai/rules/reference/coding-conventions.md) — PHP/JS/SCSS/Twig conventions
 - [twig-templating](ai/rules/reference/twig-templating.md) — Timber context, functions, hierarchy → routes to `create-component`
@@ -215,9 +195,4 @@ Skills live as `ai/skills/{name}/SKILL.md` — auto-discovered by Claude Code at
 
 ## Loading rules
 
-Flow: **CLAUDE.md (auto-loaded)** → **reference** → **skill** → **templates**.
-
-- **CLAUDE.md**: always loaded by Claude Code at session start. Carries identity, architecture, project rules, and the routing index.
-- **Reference**: load BEFORE the matching skill for any scaffolding or token task. Reference owns the "what"; skills assume you've read it. Load other reference docs on demand when you need them.
-- **Skills**: load when running that skill — after its reference partner is in context.
-- **Templates**: load only when copying code from them.
+Flow: **CLAUDE.md (auto-loaded)** → **reference** (the "what" — load BEFORE the matching skill; other reference docs on demand) → **skill** (the "how" — assumes its reference partner is in context) → **templates** (load only when copying code).

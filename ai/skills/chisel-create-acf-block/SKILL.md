@@ -106,8 +106,8 @@ Available context (set by `BlocksHelpers::acf_block_render`):
 
 Image helpers:
 
-- `{{ get_image(fields.image_field) }}` — Timber image object
-- `{{ get_responsive_image(fields.image_field, 'large') }}` — responsive img tag
+- `{{ get_responsive_image(fields.image_field, 'large') }}` — responsive `<img>` with srcset — **preferred for rendering images**
+- `{{ get_image(fields.image_field) }}` — Timber image object (Timber built-in) — only when you need image properties (`.src`, `.width`, `.alt`), not a rendered tag
 
 ### style.scss
 
@@ -165,7 +165,7 @@ Select on a `js-`-prefixed hook (`.js-{block-name}`), not the styling class — 
 }
 ```
 
-**Naming is a HARD RULE** — `key` = hex hash, filename = group key, `name` = block-initial prefix (WPML), `label` stays human. Full spec, derivation cases, and example: [reference/acf-naming.md](../../rules/reference/acf-naming.md).
+**Naming is a HARD RULE** — `key` = hex hash, filename = group key, `name` = block-initial prefix (WPML), `label` stays human. Full spec, derivation cases, and example: [reference/acf-naming.md](../../rules/reference/acf-naming.md). Before finishing, run its "Mechanical check": key format, filename = key, EVERY field + sub-field name prefixed (no generic `mode`/`count`/`heading` names), and `modified` bumped.
 
 Common field types: `text`, `textarea`, `wysiwyg`, `image` (return: `id`), `repeater` with `sub_fields`, `select`, `radio`, `true_false`, `link`, `group` with `sub_fields`.
 

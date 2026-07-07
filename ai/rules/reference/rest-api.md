@@ -27,12 +27,12 @@ Chisel provides an AJAX/REST system built on `WP_REST_Controller`.
 
 ## Creating a custom endpoint
 
-1. Create `custom/app/Ajax/Custom/{Name}Endpoint.php`
+1. Create `custom/app/Ajax/{Name}Endpoint.php` — the namespace keeps the `Custom` segment (`Chisel\Ajax\Custom`), the file path drops it: the autoloader strips `Custom` when resolving (see [CLAUDE.md "Architecture"](../../../CLAUDE.md#architecture-core-vs-custom)). A file placed at `custom/app/Ajax/Custom/…` is never found.
 2. Implement `AjaxEndpointInterface`
 3. Register the route via `chisel_ajax_routes` filter
 
 ```php
-// custom/app/Ajax/Custom/SearchEndpoint.php
+// custom/app/Ajax/SearchEndpoint.php
 namespace Chisel\Ajax\Custom;
 
 use Chisel\Interfaces\AjaxEndpointInterface;

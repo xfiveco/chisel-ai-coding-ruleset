@@ -81,10 +81,10 @@ For each section from top to bottom:
 2. Decide mapping via [reference/section-mapping-decisions.md](../../rules/reference/section-mapping-decisions.md) ladder
 3. If first section or new elements appear → adapt base styles via `adapt-base-styles`
 4. Build pattern via `create-pattern` (or appropriate skill)
-5. Upload section images via `xfive-media-media-upload`
+5. Upload section images via `xfive-images-image-upload`
 6. Push section to page via `xfive-posts-post-update-content` (full page markup; for partial updates fetch with `post-get-content`/`block-tree`, modify the markup string, write the whole thing back)
 7. Update the `ai-progress/` files with what was built (phase file checklist + roadmap row outcome)
-8. Verify in browser before moving to next section
+8. **Visual diff (mandatory before the next section):** call `get_screenshot(fileKey, sectionNodeId)` and compare against the rendered section in the browser — take a browser screenshot if you have the tooling, otherwise ask the user for one. Check spacing steps, colors, font sizes, and alignment against the Figma crop; fix drift now, not in a later QA round.
 
 Header/footer: use `adapt-header-footer` skill, not patterns.
 
@@ -92,9 +92,9 @@ Header/footer: use `adapt-header-footer` skill, not patterns.
 
 **When `get_design_context` returns an asset URL (`const imgFoo = "https://www.figma.com/api/mcp/asset/..."`), DOWNLOAD it — never redraw from scratch.** This applies to icons, illustrations, logos, photos, decorative SVGs — anything Figma exposes as an asset reference. Use `curl` to fetch the URL, then either:
 
-- For raster (PNG/JPG/WEBP): upload via `xfive-media-media-upload` and use the attachment ID.
+- For raster (PNG/JPG/WEBP): upload via `xfive-images-image-upload` and use the attachment ID.
 - For SVG icons that should join Chisel's mask-based icon system: save to `assets/icons-source/{name}.svg` (and convert stroke-only paths to fills if the icon will be masked — Chisel uses `mask: url(...)` + `background-color: currentColor`, which needs filled shapes; round-trip the SVG to a fill-equivalent silhouette if needed).
-- For SVG illustrations used as `<img>` or background-image: upload via `xfive-media-media-upload`.
+- For SVG illustrations used as `<img>` or background-image: upload via `xfive-images-image-upload`.
 
 Asset URLs returned by Figma are short-lived (~7 days) but stable for the duration — download them at the moment `get_design_context` returns them, alongside the rest of the section's work. If you skip the download and "draw something close" instead, the section won't match Figma and the user will catch it in browser review (wasted round-trip).
 

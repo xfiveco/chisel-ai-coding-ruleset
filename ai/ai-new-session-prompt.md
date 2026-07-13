@@ -6,7 +6,9 @@ Then paste this at the start of every new Chisel session (new project or new con
 
 > Read `CLAUDE.md` first and confirm you have it — it owns the loading flow, scaffolding rules, progress-file procedure, and the per-phase plan-review gate. Follow it.
 >
-> First check `ai-progress/INDEX.md` — if an effort is already in progress, open its roadmap and **resume the next phase** instead of scoping from scratch.
+> First check `ai-progress/INDEX.md` — if a task is listed under `## Active`, open its `changes/{NN}-{task-name}/ROADMAP.md` and **resume the next phase** instead of scoping from scratch.
+>
+> If the task is **feedback on already-built work** (QA notes, code-review comments, bug report), check quick-fix mode first — CLAUDE.md "Modes" + the `chisel-quick-fix` skill. Items that qualify skip the phased workflow below entirely (no progress files, no plan-review gate): triage, fix, report. Items that don't qualify come back through the phased workflow.
 >
 > Otherwise, work the task in phases, one at a time, **never chaining**:
 >
@@ -16,6 +18,7 @@ Then paste this at the start of every new Chisel session (new project or new con
 >    a. **Expand the phase plan** in the progress file (what you'll do, files/blocks/tokens, decisions). **Then STOP — do not write any code.** Wait for my review; I may change the plan.
 >    b. On my explicit go-ahead, **build that phase only**, then summarize (what changed, what to verify). **STOP.**
 >    c. Wait for "next" before touching the following phase.
+>    - If you notice a bug or oddity along the way — even one unrelated to this task — jot one line in `ai-progress/FINDINGS.md` and keep going; don't derail the phase.
 > 4. **Wrap-up** — final summary + follow-ups after the last phase.
 >
 > If anything is ambiguous, ask before starting — don't guess.

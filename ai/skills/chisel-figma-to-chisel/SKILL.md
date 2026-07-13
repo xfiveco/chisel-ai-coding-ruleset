@@ -25,7 +25,7 @@ This skill calls other skills — don't reinvent their work.
 
 ## Load-bearing rules for Figma mode
 
-- **The `ai-progress/` files are the source of truth across sessions.** Update the effort roadmap + the active phase file after every section (patterns, blocks, CPTs, phase checkboxes, session log line with absolute date). They survive `/compact` and new sessions; your in-context memory does not. Layout + procedure owned by the [chisel-plan skill](../chisel-plan/SKILL.md).
+- **The `ai-progress/` files are the source of truth across sessions.** This import lives in its own folder, `ai-progress/changes/{NN}-{task-name}/`. Update its roadmap + the active phase file after every section (patterns, blocks, CPTs, phase checkboxes) and append a session log line with an absolute date to that folder's `LOG.md`. Incidental bugs/oddities → one line in `ai-progress/FINDINGS.md`. They survive `/compact` and new sessions; your in-context memory does not. Layout + procedure owned by the [chisel-plan skill](../chisel-plan/SKILL.md).
 - **Sections are processed top-to-bottom, one at a time, end-to-end.** End-to-end means: CPT (if needed) + block/pattern + SCSS + images + page wiring + progress file update — all for one section before moving to the next. No cross-section batching.
 - **Stop for user review after each section.** Don't chain sections silently.
 - **Don't batch `get_design_context`.** One section at a time — batching overflows context.
@@ -54,7 +54,7 @@ If `theme.json` still has example palette (`#dd2424` primary, `#22dbdb` secondar
 
 ### Phase 0.5 — ai-progress/ roadmap
 
-Read `ai-progress/INDEX.md`, then this import's `{effort-slug}-ROADMAP.md`, in the theme root. If missing, create them using the [chisel-plan skill](../chisel-plan/SKILL.md) (Figma mode → a per-import roadmap + `{effort-slug}/` phase folder, plus an INDEX row).
+Read `ai-progress/INDEX.md`, then this import's `changes/{NN}-{task-name}/ROADMAP.md`. If missing, create them using the [chisel-plan skill](../chisel-plan/SKILL.md) (Figma mode → a per-import `changes/{NN}-{task-name}/` folder holding `ROADMAP.md` + `LOG.md` + phase files, plus an INDEX row under `## Active`).
 
 ### Phase 1 — Scope
 
@@ -108,7 +108,7 @@ When refining: fresh screenshot → compare rendered → adjust tokens first, th
 
 ### Phase 7 — Update ai-progress/
 
-Flip the phase file's checkboxes + the roadmap row (status + one-line outcome), add patterns/blocks/CPTs to artifacts, append a session log line with absolute date, and refresh the INDEX row's state.
+Flip the phase file's checkboxes + the roadmap row (status + one-line outcome), add patterns/blocks/CPTs to artifacts, append a session log line with absolute date to `LOG.md`, and refresh the INDEX row's state. When the whole import is done, move its INDEX row from `## Active` to `## Done`.
 
 ## Output report
 

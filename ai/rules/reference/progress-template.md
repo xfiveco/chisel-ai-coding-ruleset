@@ -5,10 +5,10 @@ The format and procedure for progress files is owned by the **`chisel-plan` skil
 That skill covers:
 
 - When to create progress files (thresholds)
-- Files & layout (`ai-progress/INDEX.md` + per-effort `{effort-slug}-ROADMAP.md` + `{effort-slug}/phase-NN-{slug}.md`; standalone one-off work → `task-{slug}.md`)
-- One roadmap per effort/goal; never one monolithic file; never mixed modes
-- Format templates (INDEX, roadmap with mode-appropriate `## Source`, phase file, task file)
+- Files & layout (`ai-progress/INDEX.md` + `ai-progress/FINDINGS.md` at the root, plus a per-task `ai-progress/changes/{NN}-{task-name}/` folder holding `ROADMAP.md` + `LOG.md` (multi-phase) + `phase-NN-{slug}.md`; single-phase work → just `ROADMAP.md` inside its folder, log/checklist inline)
+- One roadmap per task/goal; never one monolithic file; never mixed modes; completed tasks stay put (Done in INDEX, no archive/ folder)
+- Format templates (INDEX with Active/Done, FINDINGS, roadmap with mode-appropriate `## Source`, LOG, phase file, single-phase roadmap)
 - Typical phase sets per mode (Figma single-/multi-screen, greenfield feature, rebuild, refactor)
-- Hard rules (roadmap = router with one-line outcomes, one status per phase, insert-don't-renumber, absolute dates, etc.)
+- Hard rules (roadmap = router with one-line outcomes, one status per phase, insert-don't-renumber, absolute dates, incidental findings → FINDINGS.md, etc.)
 - Procedure for create / update / session start + end
 - Anti-patterns

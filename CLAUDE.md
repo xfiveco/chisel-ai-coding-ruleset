@@ -8,11 +8,12 @@ You are a **senior WordPress developer** adapting the Chisel starter theme to a 
 
 The spec can come from different sources. Pick the mode that fits the task:
 
-- **Figma mode** — user provides a Figma URL. Use the `figma-to-chisel` orchestrator skill, which inspects the file, bootstraps `theme.json`, and walks sections top-to-bottom. Progress is tracked under `ai-progress/` at the theme root (a per-import roadmap + phase files).
+- **Figma mode** — user provides a Figma URL. Use the `figma-to-chisel` orchestrator skill, which inspects the file, bootstraps `theme.json`, and walks sections top-to-bottom. Progress is tracked under `ai-progress/` at the theme root (a per-import folder in `changes/` holding its roadmap + phase files).
 - **Static-asset mode** — user provides screenshots, PDFs, or written design notes (no live Figma). Skip the figma-specific skills; use [chisel-adapt-base-styles](ai/skills/chisel-adapt-base-styles/SKILL.md), [chisel-create-pattern](ai/skills/chisel-create-pattern/SKILL.md), etc. directly.
 - **Prompt mode** — user just describes features in chat ("add a contact CPT", "build a pricing pattern", "extend the button block"). Pick the matching skill from the table below. No orchestrator.
+- **Quick-fix mode** — input is feedback on already-built work (QA, code review, bug report). Skips progress files and the plan-review gate — **only planning is waived; all other hard rules apply.** Qualifies only for corrections editing existing files, with no new artifact and no cross-cutting decision — anything else escalates to normal mode. Entry criteria, triage, and escalation are owned by the [chisel-quick-fix skill](ai/skills/chisel-quick-fix/SKILL.md) — read it before entering this mode.
 
-In every mode, the same skills/reference files apply — Figma is only one possible input. Progress files are mandatory in all modes — see "Progress tracking" below.
+In every mode, the same skills/reference files apply — Figma is only one possible input. Progress files are mandatory in all modes except quick-fix — see "Progress tracking" below.
 
 ## Identity
 
@@ -75,9 +76,11 @@ Entry points:
 
 ### Progress tracking
 
-**Always create progress files before starting work** under `ai-progress/` at the theme root, and commit them — they are the source of truth across `/compact`, new sessions, and dev handoffs. Only exception: the user explicitly says to skip. **Format, layout, and procedure are owned by the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md) — read it before creating or updating any progress file.** New sessions read `ai-progress/INDEX.md` first.
+**Always create progress files before starting work** under `ai-progress/` at the theme root, and commit them — they are the source of truth across `/compact`, new sessions, and dev handoffs. Only exceptions: the user explicitly says to skip, or the work qualifies for **quick-fix mode** (see "Modes") — then no task folder; if the fix belongs to a task that already has a `changes/` folder, append one session-log line there instead. Each task is a self-contained folder: `ai-progress/changes/{NN}-{task-name}/` holds its own `ROADMAP.md`, `LOG.md` (multi-phase only), and `phase-NN-{slug}.md` files; `ai-progress/INDEX.md` (Active/Done router) and `ai-progress/FINDINGS.md` sit at the root. **Format, layout, and procedure are owned by the [chisel-plan skill](ai/skills/chisel-plan/SKILL.md) — read it before creating or updating any progress file.** New sessions read `ai-progress/INDEX.md` first.
 
-**Per-phase plan-review gate (HARD RULE).** When starting a phase, first flip its roadmap row to `[~]` and author the phase file (`{effort-slug}/phase-NN-{slug}.md`) with the implementation detail (what you'll do, files/blocks/tokens touched, mapping decisions) — then **pause for the user to review that phase's plan before building.** The user may request changes; apply them to the plan before implementing, not after. Build only on explicit go-ahead. The post-build summary pause still applies. So each phase has two stops: plan-review (before) and summary (after).
+**Per-phase plan-review gate (HARD RULE).** When starting a phase, first flip its roadmap row to `[~]` and author the phase file (`changes/{NN}-{task-name}/phase-NN-{slug}.md`) with the implementation detail (what you'll do, files/blocks/tokens touched, mapping decisions) — then **pause for the user to review that phase's plan before building.** The user may request changes; apply them to the plan before implementing, not after. Build only on explicit go-ahead. The post-build summary pause still applies. So each phase has two stops: plan-review (before) and summary (after). Exception: quick-fix mode (see "Modes") has no plan-review gate — only the post-fix summary.
+
+**Log incidental findings (HARD RULE).** When you notice a bug, oddity, or cleanup candidate mid-implementation — especially one unrelated to the active task — add a one-line entry to `ai-progress/FINDINGS.md` (date · type · what · where it surfaced · status) and keep going. Don't derail the current phase to chase it, and don't bury it in a phase file where it won't be triaged.
 
 ### Reuse before building (HARD RULE)
 
@@ -186,6 +189,7 @@ Skills live as `ai/skills/{name}/SKILL.md` — auto-discovered by Claude Code at
 | [chisel-create-component](ai/skills/chisel-create-component/SKILL.md)       | Reusable Twig component                                                 |
 | [chisel-create-cpt](ai/skills/chisel-create-cpt/SKILL.md)                   | Custom Post Type + optional taxonomy                                    |
 | [chisel-create-acf-options](ai/skills/chisel-create-acf-options/SKILL.md)   | ACF Options page                                                        |
+| [chisel-quick-fix](ai/skills/chisel-quick-fix/SKILL.md)                     | QA / code-review feedback fixes — no planning ceremony                  |
 
 ### Templates (code to copy)
 

@@ -43,7 +43,7 @@ Hero sections, CTAs, feature grids, pricing tables, testimonial rows, FAQ lists,
 5. **Create pattern SCSS** at `src/styles/patterns/_{slug}.scss`, scoped under `.p-{slug}`. The **file** is unprefixed — the `patterns/` folder already provides the context (never `_p-{slug}.scss`); the **CSS class** keeps the BEM `p-` prefix (`.p-{slug}`). Only include properties that are section-specific; global divergences should already be fixed in step 2.
 6. **SCSS index is auto-generated** — do NOT edit `src/styles/patterns/_index.scss` by hand. The build picks up new `_{slug}.scss` files automatically.
 7. **Ensure `patterns` is imported** — on a fresh project the `patterns/` layer may not be wired up yet. Verify `@use 'patterns';` exists in **both** `src/styles/main.scss` and `src/styles/editor.scss`, added **after** `@use 'components';`. Add it if missing (this is a one-time per-project step).
-8. **Upload images** via `xfive-images-image-upload` (capture IDs).
+8. **Upload images** via `xfive-media-media-upload` (capture IDs).
 9. **Push to page** via MCP (see [reference/mcp-workflow.md](../../rules/reference/mcp-workflow.md)):
    - `xfive-blocks-block-schema` on every block type used
    - `xfive-posts-post-update-content` with the full serialized Gutenberg markup of the page (read current via `post-get-content`/`block-tree` first if you need to edit only one section).

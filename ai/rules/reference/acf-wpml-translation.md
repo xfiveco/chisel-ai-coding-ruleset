@@ -25,7 +25,7 @@ In ACFML's default ("standard") mode the per-field values are dormant and ACFML 
 | `2` | `WPML_TRANSLATE_CUSTOM_FIELD` | field is editable per language / shows in the Translation Editor | **Translate** |
 | `3` | `WPML_COPY_ONCE_CUSTOM_FIELD` | copied to the translation on creation, then independently editable | **Copy Once** |
 
-These are the literal integers WPML defines (`sitepress-multilingual-cms`). Note `2` and `3` are **not** in numeric order of "how much translation" — `2` is Translate, `3` is Copy Once. A missing key falls back to ACFML's type default, so always set it explicitly in Expert mode.
+These are the literal integers WPML defines (`sitepress-multilingual-cms`) — use the value from the table above (`1` Copy, `2` Translate, `3` Copy Once); the integer does not rank "how much translation." A missing key falls back to ACFML's type default, so always set it explicitly in Expert mode.
 
 ## Rule 3 — preset preference per ACF field type
 

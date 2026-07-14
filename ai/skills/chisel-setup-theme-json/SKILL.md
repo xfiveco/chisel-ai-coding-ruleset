@@ -112,7 +112,7 @@ If mismatch: either add the missing slug or update the SCSS.
 Once theme.json is stable and SCSS builds:
 
 - **Figma mode** → invoke [figma-to-chisel](../chisel-figma-to-chisel/SKILL.md) for each page.
-- **Static-asset / prompt mode** → proceed to [adapt-base-styles](../chisel-adapt-base-styles/SKILL.md), then [create-pattern](../chisel-create-pattern/SKILL.md) / [create-acf-block](../chisel-create-acf-block/SKILL.md) / [create-cpt](../chisel-create-cpt/SKILL.md) as needed.
+- **Static-asset / prompt mode** → proceed to [adapt-base-styles](../chisel-adapt-base-styles/SKILL.md) and [adapt-header-footer](../chisel-adapt-header-footer/SKILL.md), then [create-pattern](../chisel-create-pattern/SKILL.md) / [create-acf-block](../chisel-create-acf-block/SKILL.md) / [create-acf-options](../chisel-create-acf-options/SKILL.md) / [create-cpt](../chisel-create-cpt/SKILL.md) as needed.
 
 ## Output report
 

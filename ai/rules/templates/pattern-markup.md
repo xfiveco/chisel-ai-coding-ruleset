@@ -89,7 +89,7 @@ Available `is-style-*` sizes come from `registerSpacerStyles()` in `src/scripts/
 
 ## Media
 
-Two surfaces, two image sources: **seeded pages** (written via MCP) use attachment IDs + upload URLs from `xfive-images-image-upload`, as below. **Pattern source files** (`patterns/*.php`) must instead reference theme-shipped placeholders (`get_stylesheet_directory_uri()` + `assets/images/placeholders/…`, no `id` attr) — attachment IDs don't exist on other installs, and `src=""` ships a broken pattern. See create-pattern guideline 9.
+Two surfaces, two image sources: **seeded pages** (written via MCP) use attachment IDs + upload URLs from `xfive-media-media-upload`, as below. **Pattern source files** (`patterns/*.php`) must instead reference theme-shipped placeholders (`get_stylesheet_directory_uri()` + `assets/images/placeholders/…`, no `id` attr) — attachment IDs don't exist on other installs, and `src=""` ships a broken pattern. See create-pattern guideline 9.
 
 **Image (with attachment ID):**
 
@@ -214,7 +214,7 @@ Full hero section with overlay color, top/bottom spacers, centered headline, lea
 
 ### Media + text (image on the left or right)
 
-Use `core/media-text` for image-beside-content sections (feature rows). Image left is default; add `"mediaPosition":"right"` to flip. `mediaId` is the attachment ID returned by `xfive-images-image-upload`.
+Use `core/media-text` for image-beside-content sections (feature rows). Image left is default; add `"mediaPosition":"right"` to flip. `mediaId` is the attachment ID returned by `xfive-media-media-upload`.
 
 **Image left:**
 

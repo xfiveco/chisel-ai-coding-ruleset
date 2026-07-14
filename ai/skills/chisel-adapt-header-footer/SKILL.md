@@ -98,7 +98,7 @@ Use `xfive-menus-nav-menu-create` to create the menu and assign to location (`ch
 ### 7. Upload and set logo
 
 ```
-xfive-images-image-upload { image_url or local_path }
+xfive-media-media-upload { image_url or local_path }
 xfive-options-options-update { type: "theme_mod", entries: { "custom_logo": <id> } }
 ```
 

@@ -33,7 +33,7 @@ Any Gutenberg content insertion goes through MCP:
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | Posts                | `post-by-title`, `post-get-content`, `post-get-meta`, `post-create`, `post-update`, `post-update-content`, `post-trash` |
 | Blocks               | `block-tree` (read), `block-schema` (read)                                                                              |
-| Media                | `image-upload`, `media-migrate`                                                                                         |
+| Media                | `media-upload`, `media-migrate`                                                                                         |
 | Menus                | `nav-menu-list`, `nav-menu-create`                                                                                      |
 | ACF                  | `acf-field-get`, `acf-field-update`                                                                                     |
 | Terms                | `term-list`, `term-create`, `term-update`, `term-delete`                                                                |
@@ -45,7 +45,7 @@ Any Gutenberg content insertion goes through MCP:
 1. **Find or create the post**: `post-by-title` to look up, `post-create` to make new.
 2. **Check existing structure** (if editing): `post-get-content` or `block-tree`.
 3. **Validate block attributes** before writing markup: `block-schema` on each block type. Catches typos/wrong types. Wrong attributes are silently ignored.
-4. **Upload images** via `xfive-images-image-upload` as part of each section build (not deferred). Capture attachment IDs/URLs. If URL returns wrong content-type (e.g. Figma asset URLs), download locally to a temp folder outside the theme (e.g. system temp, or a project-level `_tmp/` directory) then upload via `local_path`.
+4. **Upload images** via `xfive-media-media-upload` as part of each section build (not deferred). Capture attachment IDs/URLs. If URL returns wrong content-type (e.g. Figma asset URLs), download locally to a temp folder outside the theme (e.g. system temp, or a project-level `_tmp/` directory) then upload via `local_path`.
 5. **Generate block markup** as serialized WordPress block grammar. Use preset classes (`has-primary-color`, `is-style-primary`, `has-large-font-size`).
 6. **Write content**: ALWAYS via `post-update-content` with the **full serialized markup of the entire post**. The tool takes only `post_id` + `content` and **completely replaces `post_content` on every call** — there is no append or partial mode (partial-block tools were removed because index-based mutation was fragile).
    - **⚠️ To add a section**: fetch current with `post-get-content`, concatenate the new section onto the full existing markup, write the whole thing back. Sending only the new section silently wipes every prior section — confirmed twice in practice. Always get → concat-onto-full → write.
@@ -84,7 +84,7 @@ xfive-options-options-update {
 
 Common use cases:
 
-- **Site logo**: upload via `xfive-images-image-upload` → set `custom_logo` theme mod to attachment ID
+- **Site logo**: upload via `xfive-media-media-upload` → set `custom_logo` theme mod to attachment ID
 - **Front page**: `type: "option"`, `entries: { "show_on_front": "page", "page_on_front": {id} }`
 - **Nav menu locations**: `type: "theme_mod"`, `entries: { "nav_menu_locations": { "chisel_main_nav": 3 } }`
 
@@ -111,4 +111,4 @@ These cause "Block validation failed" or wrong markup the agent won't catch on i
 - **`core/group` with both `backgroundColor` AND `textColor` requires `has-background`** on the rendered `<div>` — in addition to `has-background-color has-{slug}-background-color has-text-color`. Missing it = "Block validation failed" on save. Full saved class list: `has-background-color has-{slug}-background-color has-text-color has-background`. (When only one of the two is set, omit `has-background`.)
 - **`post-update-content` un-escapes one backslash level.** ACF block `data` containing `\r\n` / `\t` (multi-line textarea / WYSIWYG fields) must be **double-escaped** (`\\r\\n`, `\\t`) in the content you send, or the escape sequence is stripped to its bare letters and corrupts the field. Re-fetch and verify any field carrying newlines/tabs after writing.
 - **When unsure: round-trip.** Insert one instance in the editor manually, save, `xfive-posts-post-get-content`, copy that exact markup. The block's own `save()` is ground truth.
-- Pages created with an explicit `post_status: "publish"` (the tool defaults to draft) for immediate preview. New ACF block → pause, user builds, schema-check passes, then seed (schema fails until `npm run build-scripts` runs).
+- Pages created with an explicit `post_status: "publish"` (the tool defaults to draft) for immediate preview. New ACF block → pause for the user to **compile** (`npm run build-scripts` — the block + field group register only from `build/`), then schema-check passes, then seed (schema fails until the compile runs).

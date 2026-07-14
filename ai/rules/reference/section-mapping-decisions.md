@@ -22,7 +22,7 @@ When implementing a feature end-to-end, follow this order — it prevents costly
 5. **Editor experience** — blocks or patterns
 6. **Styling** — SCSS in the right ITCSS layer
 7. **Behavior** — JS modules, sliders, filters, AJAX
-8. **Build and QA** — ask the user to run `npm run build` (see CLAUDE.md "Before completing any task")
+8. **Compile and QA** — ask the user to run `npm run build-scripts` (see CLAUDE.md "Before completing any task")
 
 ## Quick pick
 

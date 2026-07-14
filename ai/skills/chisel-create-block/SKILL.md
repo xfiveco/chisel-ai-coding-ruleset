@@ -37,7 +37,7 @@ Custom blocks are the most expensive option — confirm via [section-mapping-dec
 ## Procedure
 
 1. **Create all files** in `src/blocks/{block-name}/` — see [templates/custom-block-template.md](../../rules/templates/custom-block-template.md). File list: [reference/blocks.md "Custom WP Block"](../../rules/reference/blocks.md#custom-wp-block-srcblocksname).
-2. **Run `npm run dev` or `npm run build-scripts`** to compile.
+2. **Run `npm run dev` or `npm run build-scripts`** to compile — Chisel registers blocks from `build/blocks/`, NOT `src/blocks/`. Until the build runs, the block won't appear in the editor.
 3. **Verify** in editor under "Chisel Blocks" category. `xfive-blocks-block-schema` to confirm registration + check `renderMode`.
 4. **Test** in editor and on frontend.
 

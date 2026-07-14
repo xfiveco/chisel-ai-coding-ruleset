@@ -99,7 +99,7 @@ For any content insert/edit, image upload, ACF field, theme mod, option, nav men
 
 Page title display (ACF `page_title_display`): `hide` (hero contains its own H1), `hide-visually` (custom visual but H1 needed for SEO), `show` (default — design shows a page title heading).
 
-**Before hand-writing any block markup, read [mcp-workflow.md "Silent-failure traps"](ai/rules/reference/mcp-workflow.md#silent-failure-traps-block-seeding).** Seeding has several traps that cause "Block validation failed" or wrong markup the agent won't catch (schema-before-every-block, `renderMode` seed shape, `useBlockProps` auto-prefix, `InnerBlocks` whitespace, `core/group` `has-background`, round-trip-when-unsure). Pages created with explicit `post_status: "publish"` (tool defaults to draft); new ACF block → pause for user to build, schema-check, then seed.
+**Before hand-writing any block markup, read [mcp-workflow.md "Silent-failure traps"](ai/rules/reference/mcp-workflow.md#silent-failure-traps-block-seeding).** Seeding has several traps that cause "Block validation failed" or wrong markup the agent won't catch (schema-before-every-block, `renderMode` seed shape, `useBlockProps` auto-prefix, `InnerBlocks` whitespace, `core/group` `has-background`, round-trip-when-unsure). Pages created with explicit `post_status: "publish"` (tool defaults to draft); new ACF block → pause for the user to compile (`npm run build-scripts`), then schema-check, then seed.
 
 ### Spacing between blocks
 
